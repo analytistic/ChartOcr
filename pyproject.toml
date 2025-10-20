@@ -3,5 +3,7 @@ name = "chartocr"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.12"
-dependencies = []
+requires-python = ">=3.8,<3.9"
+dependencies = [
+    "scipy==1.9.3",
+]
