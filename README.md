@@ -1,6 +1,7 @@
 ## Install Environment
 
 项目依赖[MMdetection Framework](https://github.com/open-mmlab/mmdetection).
+环境管理依赖uv
 
 
 ## workflow
