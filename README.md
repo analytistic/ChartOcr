@@ -6,6 +6,9 @@
 > cd chartocr
 > git submodule update --init --recursive
 > uv sync
+> source .venv/bin/activate
+> uv pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117 --index-url https://download.pytorch.org/whl/cu117 
+> uv sync
 
 ## workflow
 
@@ -86,8 +89,10 @@ git clone https://github.com/your-org/chartocr.git
 git clone git@github.com:your-org/chartocr.git
 cd chartocr
 git submodule update --init --recursive # 初始化子模块mmdet，这里子模块的修改有自己的git仓库，是从官方仓库fork的
-uv sync # 用来1.依照pyproject安装（更新）环境，2.构建整个项目（会把整个项目构建成一个包，过程中忽略mmdet文件夹）
+uv sync # 用来1.依照pyproject安装（更新）环境，2.构建整个项目（会把整个项目构建成一个包，过程中忽略mmdet文件夹）可能会遇到没安装torch的问题
 source .venv/bin/activate
+uv pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117 --index-url https://download.pytorch.org/whl/cu117 
+uv sync # 安装完后在构建一下就行
 ```
 
 mmdet 子模块开发环境
