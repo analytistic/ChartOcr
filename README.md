@@ -8,6 +8,8 @@ git submodule update --init --recursive
 uv sync # 如果显示依赖torch报错，先进入环境，手动安装torch
 source .venv/bin/activate
 uv pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117 --index-url https://download.pytorch.org/whl/cu117 
+uv sync 
+uv run mim install "mmcv==2.0.1"
 uv sync
 ```
 
@@ -93,7 +95,9 @@ git submodule update --init --recursive # 初始化子模块mmdet，这里子模
 uv sync # 用来1.依照pyproject安装（更新）环境，2.构建整个项目（会把整个项目构建成一个包，过程中忽略mmdet文件夹）可能会遇到没安装torch的问题
 source .venv/bin/activate
 uv pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117 --index-url https://download.pytorch.org/whl/cu117 
-uv sync # 安装完后在构建一下就行
+uv sync 
+uv run mim install "mmcv==2.0.1"
+uv sync
 ```
 
 mmdet 子模块开发环境
