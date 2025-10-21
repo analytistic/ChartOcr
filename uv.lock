@@ -69,7 +69,6 @@ dependencies = [
     { name = "bresenham" },
     { name = "chardet" },
     { name = "matplotlib" },
-    { name = "mmcv" },
     { name = "mmdet" },
     { name = "mmengine" },
     { name = "opencv-python" },
@@ -88,7 +87,6 @@ requires-dist = [
     { name = "bresenham", specifier = ">=0.2.1" },
     { name = "chardet", specifier = ">=5.2.0" },
     { name = "matplotlib", specifier = ">=3.7.5" },
-    { name = "mmcv", specifier = ">=2.0.0,<2.2.0" },
     { name = "mmdet", editable = "mmdetection" },
     { name = "mmengine", specifier = ">=0.10.7" },
     { name = "opencv-python", specifier = ">=4.12.0.88" },
@@ -323,23 +321,6 @@ sdist = { url = "https://mirrors.aliyun.com/pypi/packages/d6/54/cfe61301667036ec
 wheels = [
     { url = "https://mirrors.aliyun.com/pypi/packages/b3/38/89ba8ad64ae25be8de66a6d463314cf1eb366222074cfda9ee839c56a4b4/mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8" },
 ]
-
-[[package]]
-name = "mmcv"
-version = "2.1.0"
-source = { registry = "https://mirrors.aliyun.com/pypi/simple" }
-dependencies = [
-    { name = "addict" },
-    { name = "mmengine" },
-    { name = "numpy" },
-    { name = "opencv-python" },
-    { name = "packaging" },
-    { name = "pillow" },
-    { name = "pyyaml" },
-    { name = "regex", marker = "sys_platform == 'win32'" },
-    { name = "yapf" },
-]
-sdist = { url = "https://mirrors.aliyun.com/pypi/packages/a7/19/f97f0fd4d432113a232e75f965335be6b7bb6557ae9faf8051e9a012cadd/mmcv-2.1.0.tar.gz", hash = "sha256:d387bcab66b467479b6660310e23746cfc79c6e57acf04094680adb499a5cd3f" }
 
 [[package]]
 name = "mmdet"
