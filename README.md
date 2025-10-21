@@ -75,3 +75,34 @@ ChartOcr/
 **输出：**
 
 - 曲线真实坐标 JSON 文件
+
+# 流程 2025-10-21
+
+Chart Ocr开发环境
+
+```Plain
+git clone https://github.com/your-org/chartocr.git
+cd chartocr
+git submodule update --init --recursive # 初始化子模块mmdet，这里子模块的修改有自己的git仓库，是从官方仓库fork的
+uv sync # 用来1.依照pyproject安装（更新）环境，2.构建整个项目（会把整个项目构建成一个包，过程中忽略mmdet文件夹）
+source .venv/bin/activate
+```
+
+mmdet 子模块开发环境
+
+```Plain
+# 进入子模块目录
+cd mmdetection
+
+# 查看当前分支（应该是 for_chartocr）
+git branch
+
+# 为子模块添加上游仓库（用于同步官方更新）
+git remote add upstream https://github.com/open-mmlab/mmdetection.git
+
+# 验证远程仓库配置
+git remote -v
+```
+
+fork/main         →  跟踪官方 main 保持同步，不用做开发
+fork/for_chartocr → 用作子模块的合并分支
