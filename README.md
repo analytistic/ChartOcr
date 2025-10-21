@@ -2,13 +2,14 @@
 
 项目依赖[MMdetection Framework](https://github.com/open-mmlab/mmdetection).
 环境管理依赖uv
-
-> cd chartocr
-> git submodule update --init --recursive
-> uv sync
-> source .venv/bin/activate
-> uv pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117 --index-url https://download.pytorch.org/whl/cu117 
-> uv sync
+```
+cd chartocr
+git submodule update --init --recursive
+uv sync # 如果显示依赖torch报错，先进入环境，手动安装torch
+source .venv/bin/activate
+uv pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117 --index-url https://download.pytorch.org/whl/cu117 
+uv sync
+```
 
 ## workflow
 
