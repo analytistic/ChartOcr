@@ -82,6 +82,8 @@ Chart Ocr开发环境
 
 ```Plain
 git clone https://github.com/your-org/chartocr.git
+# 如果服务器太慢 用ssh绕过
+git clone git@github.com:your-org/chartocr.git
 cd chartocr
 git submodule update --init --recursive # 初始化子模块mmdet，这里子模块的修改有自己的git仓库，是从官方仓库fork的
 uv sync # 用来1.依照pyproject安装（更新）环境，2.构建整个项目（会把整个项目构建成一个包，过程中忽略mmdet文件夹）
@@ -106,3 +108,10 @@ git remote -v
 
 fork/main         →  跟踪官方 main 保持同步，不用做开发
 fork/for_chartocr → 用作子模块的合并分支
+
+配置提交身份
+git config user.name "你的名字"
+git config user.email "你的邮箱"
+
+开发新功能分支
+git checkout -b feature/xxx
