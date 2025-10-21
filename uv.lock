@@ -60,6 +60,7 @@ dependencies = [
     { name = "bresenham" },
     { name = "chardet" },
     { name = "matplotlib" },
+    { name = "mmdet" },
     { name = "opencv-python" },
     { name = "openmim" },
     { name = "pillow" },
@@ -76,6 +77,7 @@ requires-dist = [
     { name = "bresenham", specifier = ">=0.2.1" },
     { name = "chardet", specifier = ">=5.2.0" },
     { name = "matplotlib", specifier = ">=3.7.5" },
+    { name = "mmdet", editable = "mmdetection" },
     { name = "opencv-python", specifier = ">=4.12.0.88" },
     { name = "openmim", specifier = ">=0.3.9" },
     { name = "pillow", specifier = ">=10.4.0" },
@@ -310,6 +312,90 @@ wheels = [
 ]
 
 [[package]]
+name = "mmdet"
+version = "3.3.0"
+source = { editable = "mmdetection" }
+dependencies = [
+    { name = "matplotlib" },
+    { name = "numpy" },
+    { name = "pycocotools" },
+    { name = "scipy" },
+    { name = "shapely" },
+    { name = "six" },
+    { name = "terminaltables" },
+    { name = "tqdm" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "asynctest", marker = "extra == 'tests'" },
+    { name = "cityscapesscripts", marker = "extra == 'all'" },
+    { name = "cityscapesscripts", marker = "extra == 'optional'" },
+    { name = "cityscapesscripts", marker = "extra == 'tests'" },
+    { name = "codecov", marker = "extra == 'tests'" },
+    { name = "cython", marker = "extra == 'all'" },
+    { name = "cython", marker = "extra == 'build'" },
+    { name = "emoji", marker = "extra == 'all'" },
+    { name = "emoji", marker = "extra == 'optional'" },
+    { name = "fairscale", marker = "extra == 'all'" },
+    { name = "fairscale", marker = "extra == 'multimodal'" },
+    { name = "fairscale", marker = "extra == 'optional'" },
+    { name = "flake8", marker = "extra == 'tests'" },
+    { name = "imagecorruptions", marker = "extra == 'all'" },
+    { name = "imagecorruptions", marker = "extra == 'optional'" },
+    { name = "imagecorruptions", marker = "extra == 'tests'" },
+    { name = "instaboostfast", marker = "extra == 'tests'" },
+    { name = "interrogate", marker = "extra == 'tests'" },
+    { name = "isort", marker = "extra == 'tests'", specifier = "==4.3.21" },
+    { name = "jsonlines", marker = "extra == 'multimodal'" },
+    { name = "kwarray", marker = "extra == 'tests'" },
+    { name = "matplotlib" },
+    { name = "matplotlib", marker = "extra == 'all'" },
+    { name = "memory-profiler", marker = "extra == 'tests'" },
+    { name = "mmcv", marker = "extra == 'mim'", specifier = ">=2.0.0rc4,<2.2.0" },
+    { name = "mmengine", marker = "extra == 'mim'", specifier = ">=0.7.1,<1.0.0" },
+    { name = "mmpretrain", marker = "extra == 'tracking'" },
+    { name = "mmtrack", marker = "extra == 'tests'" },
+    { name = "motmetrics", marker = "extra == 'tracking'" },
+    { name = "nltk", marker = "extra == 'multimodal'" },
+    { name = "nltk", marker = "extra == 'tests'" },
+    { name = "numpy" },
+    { name = "numpy", marker = "extra == 'all'" },
+    { name = "numpy", marker = "extra == 'build'" },
+    { name = "numpy", marker = "extra == 'tracking'", specifier = "<1.24.0" },
+    { name = "onnx", marker = "extra == 'tests'", specifier = "==1.7.0" },
+    { name = "onnxruntime", marker = "extra == 'tests'", specifier = ">=1.8.0" },
+    { name = "parameterized", marker = "extra == 'tests'" },
+    { name = "prettytable", marker = "extra == 'tests'" },
+    { name = "protobuf", marker = "extra == 'tests'", specifier = "<=3.20.1" },
+    { name = "psutil", marker = "extra == 'tests'" },
+    { name = "pycocoevalcap", marker = "extra == 'multimodal'" },
+    { name = "pycocotools" },
+    { name = "pycocotools", marker = "extra == 'all'" },
+    { name = "pytest", marker = "extra == 'tests'" },
+    { name = "scikit-learn", marker = "extra == 'all'" },
+    { name = "scikit-learn", marker = "extra == 'optional'" },
+    { name = "scikit-learn", marker = "extra == 'tracking'" },
+    { name = "scipy" },
+    { name = "scipy", marker = "extra == 'all'" },
+    { name = "seaborn", marker = "extra == 'tracking'" },
+    { name = "shapely" },
+    { name = "shapely", marker = "extra == 'all'" },
+    { name = "six" },
+    { name = "six", marker = "extra == 'all'" },
+    { name = "terminaltables" },
+    { name = "terminaltables", marker = "extra == 'all'" },
+    { name = "tqdm" },
+    { name = "tqdm", marker = "extra == 'all'" },
+    { name = "transformers", marker = "extra == 'multimodal'" },
+    { name = "transformers", marker = "extra == 'tests'" },
+    { name = "ubelt", marker = "extra == 'tests'" },
+    { name = "xdoctest", marker = "extra == 'tests'", specifier = ">=0.10.0" },
+    { name = "yapf", marker = "extra == 'tests'" },
+]
+provides-extras = ["all", "build", "mim", "multimodal", "optional", "tests", "tracking"]
+
+[[package]]
 name = "model-index"
 version = "0.1.11"
 source = { registry = "https://pypi.org/simple" }
@@ -526,6 +612,22 @@ wheels = [
 ]
 
 [[package]]
+name = "pycocotools"
+version = "2.0.7"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "matplotlib" },
+    { name = "numpy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e3/0a/f2c7565edb94530fa9205779a537df50bf315b928de095a0e3aa7fbdb366/pycocotools-2.0.7.tar.gz", hash = "sha256:da8b7815196eebf0adabf67fcc459126cbc6498bbc6ab1fd144c371465d86879", size = 24965 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/55/ad/815326ed4455ecf17a72e6145f57a81b5047aed0bde37a95fa34398a51cc/pycocotools-2.0.7-cp38-cp38-macosx_10_9_universal2.whl", hash = "sha256:6469089b9b36a1f645dc9ee830f29d261e99b4b3be73cb260688fd8b6d02760c", size = 168823 },
+    { url = "https://files.pythonhosted.org/packages/c1/82/28716322af53339d4651aed913fa80a4124475529f3f79db22019ea9fb30/pycocotools-2.0.7-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1dbc429018149dc34e206ea32ee6297ff30b55a8615a3f7f4c6e3842f9df73db", size = 424586 },
+    { url = "https://files.pythonhosted.org/packages/6c/11/6cb76ebc71388ac17691bc3da76276d1642af30bf9097de9bb5f64c92cfa/pycocotools-2.0.7-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:66864bec8b30d47faa946bb55c8e8d6b7acb9fba0c17ff6aaa37abd78cda962a", size = 439537 },
+    { url = "https://files.pythonhosted.org/packages/85/1a/f3f95a5c994be2b554f370ac314b034d43d82c69be3fd40fabed5cfd5347/pycocotools-2.0.7-cp38-cp38-win_amd64.whl", hash = "sha256:625388f52e543f6f798f75f1ec125fe519580f22e72ccbd75eee0355ce336e18", size = 85266 },
+]
+
+[[package]]
 name = "pycryptodome"
 version = "3.23.0"
 source = { registry = "https://pypi.org/simple" }
@@ -702,6 +804,23 @@ wheels = [
 ]
 
 [[package]]
+name = "shapely"
+version = "2.0.7"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/21/c0/a911d1fd765d07a2b6769ce155219a281bfbe311584ebe97340d75c5bdb1/shapely-2.0.7.tar.gz", hash = "sha256:28fe2997aab9a9dc026dc6a355d04e85841546b2a5d232ed953e3321ab958ee5", size = 283413 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d5/8a/22f7c2734b8e61c754fd7f7fceb9a1a8689b9298245d08e59b43cccb09b0/shapely-2.0.7-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:e1c4f1071fe9c09af077a69b6c75f17feb473caeea0c3579b3e94834efcbdc36", size = 1451081 },
+    { url = "https://files.pythonhosted.org/packages/ad/a5/8ef2740f26be8a5fec518d46219502ba4e678e868b0e2c613581ac657d10/shapely-2.0.7-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:3697bd078b4459f5a1781015854ef5ea5d824dbf95282d0b60bfad6ff83ec8dc", size = 1298324 },
+    { url = "https://files.pythonhosted.org/packages/03/09/8d305e181260a1adbe79ed7a209e1bdd5abad5f896a333bb93a0031e7e01/shapely-2.0.7-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1e9fed9a7d6451979d914cb6ebbb218b4b4e77c0d50da23e23d8327948662611", size = 2398176 },
+    { url = "https://files.pythonhosted.org/packages/9a/dd/e40b2bef35e21d788ecd64ea711ec2d909529f6c1e006c1f5e97b3c9bed7/shapely-2.0.7-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2934834c7f417aeb7cba3b0d9b4441a76ebcecf9ea6e80b455c33c7c62d96a24", size = 2499623 },
+    { url = "https://files.pythonhosted.org/packages/b4/75/9a98ca8cbf9d4b08b60c8d3e17a7bb31cebd74e4b170ec84cd16d1d7e000/shapely-2.0.7-cp38-cp38-win32.whl", hash = "sha256:2e4a1749ad64bc6e7668c8f2f9479029f079991f4ae3cb9e6b25440e35a4b532", size = 1297643 },
+    { url = "https://files.pythonhosted.org/packages/7c/54/c1b7ca8286df3ba767a99e8c706ae2e793b7e443c474b0840f3b3f10d09a/shapely-2.0.7-cp38-cp38-win_amd64.whl", hash = "sha256:8ae5cb6b645ac3fba34ad84b32fbdccb2ab321facb461954925bde807a0d3b74", size = 1457736 },
+]
+
+[[package]]
 name = "six"
 version = "1.17.0"
 source = { registry = "https://pypi.org/simple" }
@@ -717,6 +836,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/ec/fe/802052aecb21e3797b8f7902564ab6ea0d60ff8ca23952079064155d1ae1/tabulate-0.9.0.tar.gz", hash = "sha256:0095b12bf5966de529c0feb1fa08671671b3368eec77d7ef7ab114be2c068b3c", size = 81090 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/40/44/4a5f08c96eb108af5cb50b41f76142f0afa346dfa99d5296fe7202a11854/tabulate-0.9.0-py3-none-any.whl", hash = "sha256:024ca478df22e9340661486f85298cff5f6dcdba14f3813e8830015b9ed1948f", size = 35252 },
+]
+
+[[package]]
+name = "terminaltables"
+version = "3.1.10"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f5/fc/0b73d782f5ab7feba8d007573a3773c58255f223c5940a7b7085f02153c3/terminaltables-3.1.10.tar.gz", hash = "sha256:ba6eca5cb5ba02bba4c9f4f985af80c54ec3dccf94cfcd190154386255e47543", size = 12264 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c4/fb/ea621e0a19733e01fe4005d46087d383693c0f4a8f824b47d8d4122c87e0/terminaltables-3.1.10-py2.py3-none-any.whl", hash = "sha256:e4fdc4179c9e4aab5f674d80f09d76fa436b96fdc698a8505e0a36bf0804a874", size = 15155 },
 ]
 
 [[package]]

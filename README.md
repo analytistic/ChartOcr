@@ -3,12 +3,16 @@
 项目依赖[MMdetection Framework](https://github.com/open-mmlab/mmdetection).
 环境管理依赖uv
 
+> cd chartocr
+> git submodule update --init --recursive
+> uv sync
 
 ## workflow
 
 <img src="chartocr workflow.jpg" width="500">
 
 ## 项目结构
+
 ```text
 ChartOcr/
 ├── data/
@@ -40,44 +44,34 @@ ChartOcr/
 
 ### 数据流程概述
 
-
-
 ### 1. Detector 模块
 
 **输入：**
+
 - 图片文件（支持格式：PNG, JPG, JPEG）
 
 **输出：**
+
 - 图表元素检测 JSON 文件
-
-
-
-
 
 ### 2. Extractor 模块
 
 **输入：**
+
 - 原始图片文件
 - 图表元素检测 JSON 文件（特别是 plot_area 的 bbox 信息）
 
 **输出：**
+
 - 曲线像素坐标提取 JSON 文件
-
-
-
-
 
 ### 3. Transform 模块
 
 **输入：**
+
 - 图表元素检测 JSON 文件
 - 曲线像素坐标提取 JSON 文件
 
 **输出：**
+
 - 曲线真实坐标 JSON 文件
-
-
-
-
-
-            
