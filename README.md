@@ -85,9 +85,9 @@ ChartOcr/
 Chart Ocr开发环境
 
 ```Plain
-git clone https://github.com/your-org/chartocr.git
+git clone https://github.com/analytistic/ChartOcr.git
 # 如果服务器太慢 用ssh绕过
-git clone git@github.com:your-org/chartocr.git
+git clone git@github.com/analytistic/ChartOcr.git
 cd chartocr
 git submodule update --init --recursive # 初始化子模块mmdet，这里子模块的修改有自己的git仓库，是从官方仓库fork的
 uv sync # 用来1.依照pyproject安装（更新）环境，2.构建整个项目（会把整个项目构建成一个包，过程中忽略mmdet文件夹）可能会遇到没安装torch的问题
