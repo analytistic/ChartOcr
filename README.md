@@ -2,6 +2,7 @@
 
 项目依赖[MMdetection Framework](https://github.com/open-mmlab/mmdetection).
 环境管理依赖uv
+<<<<<<< HEAD
 ```
 cd chartocr
 git submodule update --init --recursive
@@ -12,6 +13,12 @@ uv sync
 uv run mim install "mmcv==2.0.1"
 uv sync
 ```
+=======
+
+> cd ChartOcr
+> git submodule update --init --recursive
+> bash install.sh
+>>>>>>> extractor/lineformer
 
 ## workflow
 
@@ -86,6 +93,7 @@ ChartOcr/
 
 Chart Ocr开发环境
 
+<<<<<<< HEAD
 ```Plain
 git clone https://github.com/analytistic/ChartOcr.git
 # 如果服务器太慢 用ssh绕过
@@ -99,22 +107,31 @@ uv sync
 uv run mim install "mmcv==2.0.1"
 uv sync
 ```
-
-mmdet 子模块开发环境
-
-```Plain
-# 进入子模块目录
-cd mmdetection
-
-# 查看当前分支（应该是 for_chartocr）
-git branch
-
-# 为子模块添加上游仓库（用于同步官方更新）
-git remote add upstream https://github.com/open-mmlab/mmdetection.git
-
-# 验证远程仓库配置
-git remote -v
+=======
 ```
+git clone https://github.com/your-org/chartocr.git
+cd ChartOcr
+git submodule update --init --recursive # 初始化子模块mmdet，这里子模块的修改有自己的git仓库，是从官方仓库fork的
+uv sync
+source .venv/bin/activate
+>>>>>>> extractor/lineformer
+
+#先安装ssetuptools>=75.3.2和torch
+uv pip install setuptools>=75.3.2
+uv pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117 --index-url https://download.pytorch.org/whl/cu117
+
+#可编译安装mmdet
+cd mmdetection
+git checkout v2.28.2
+git checkout -b <分支名>
+cd ..
+uv pip install -e mmdetection --no-build-isolation
+uv sync
+uv mim install mmcv-full
+
+
+```
+
 
 fork/main         →  跟踪官方 main 保持同步，不用做开发
 fork/for_chartocr → 用作子模块的合并分支

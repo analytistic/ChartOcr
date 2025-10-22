@@ -69,7 +69,10 @@ dependencies = [
     { name = "bresenham" },
     { name = "chardet" },
     { name = "matplotlib" },
+<<<<<<< HEAD
     { name = "mmdet" },
+=======
+>>>>>>> extractor/lineformer
     { name = "mmengine" },
     { name = "opencv-python" },
     { name = "openmim" },
@@ -87,7 +90,10 @@ requires-dist = [
     { name = "bresenham", specifier = ">=0.2.1" },
     { name = "chardet", specifier = ">=5.2.0" },
     { name = "matplotlib", specifier = ">=3.7.5" },
+<<<<<<< HEAD
     { name = "mmdet", editable = "mmdetection" },
+=======
+>>>>>>> extractor/lineformer
     { name = "mmengine", specifier = ">=0.10.7" },
     { name = "opencv-python", specifier = ">=4.12.0.88" },
     { name = "openmim", specifier = ">=0.3.9" },
@@ -323,6 +329,7 @@ wheels = [
 ]
 
 [[package]]
+<<<<<<< HEAD
 name = "mmdet"
 version = "3.3.0"
 source = { editable = "mmdetection" }
@@ -407,6 +414,8 @@ requires-dist = [
 provides-extras = ["all", "build", "mim", "multimodal", "optional", "tests", "tracking"]
 
 [[package]]
+=======
+>>>>>>> extractor/lineformer
 name = "mmengine"
 version = "0.10.7"
 source = { registry = "https://mirrors.aliyun.com/pypi/simple" }
@@ -652,6 +661,7 @@ wheels = [
 ]
 
 [[package]]
+<<<<<<< HEAD
 name = "pycocotools"
 version = "2.0.7"
 source = { registry = "https://mirrors.aliyun.com/pypi/simple" }
@@ -668,6 +678,8 @@ wheels = [
 ]
 
 [[package]]
+=======
+>>>>>>> extractor/lineformer
 name = "pycryptodome"
 version = "3.23.0"
 source = { registry = "https://mirrors.aliyun.com/pypi/simple" }
@@ -854,6 +866,7 @@ wheels = [
 ]
 
 [[package]]
+<<<<<<< HEAD
 name = "shapely"
 version = "2.0.7"
 source = { registry = "https://mirrors.aliyun.com/pypi/simple" }
@@ -871,6 +884,8 @@ wheels = [
 ]
 
 [[package]]
+=======
+>>>>>>> extractor/lineformer
 name = "six"
 version = "1.17.0"
 source = { registry = "https://mirrors.aliyun.com/pypi/simple" }
@@ -898,6 +913,7 @@ wheels = [
 ]
 
 [[package]]
+<<<<<<< HEAD
 name = "terminaltables"
 version = "3.1.10"
 source = { registry = "https://mirrors.aliyun.com/pypi/simple" }
@@ -907,6 +923,8 @@ wheels = [
 ]
 
 [[package]]
+=======
+>>>>>>> extractor/lineformer
 name = "tifffile"
 version = "2023.7.10"
 source = { registry = "https://mirrors.aliyun.com/pypi/simple" }
