@@ -2,23 +2,20 @@
 
 项目依赖[MMdetection Framework](https://github.com/open-mmlab/mmdetection).
 环境管理依赖uv
-<<<<<<< HEAD
-```
-cd chartocr
+
+```bash
+git clone https://github.com/analytistic/ChartOcr.git
+# 如果服务器太慢 用ssh绕过
+git clone git@github.com:analytistic/ChartOcr.git
+cd ChartOcr
 git submodule update --init --recursive
-uv sync # 如果显示依赖torch报错，先进入环境，手动安装torch
+uv sync # 如果显示依赖torch报错,先进入环境,手动安装torch
 source .venv/bin/activate
 uv pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117 --index-url https://download.pytorch.org/whl/cu117 
 uv sync 
 uv run mim install "mmcv==2.0.1"
 uv sync
 ```
-=======
-
-> cd ChartOcr
-> git submodule update --init --recursive
-> bash install.sh
->>>>>>> extractor/lineformer
 
 ## workflow
 
@@ -93,52 +90,42 @@ ChartOcr/
 
 Chart Ocr开发环境
 
-<<<<<<< HEAD
-```Plain
+```bash
 git clone https://github.com/analytistic/ChartOcr.git
 # 如果服务器太慢 用ssh绕过
-git clone git@github.com/analytistic/ChartOcr.git
-cd chartocr
-git submodule update --init --recursive # 初始化子模块mmdet，这里子模块的修改有自己的git仓库，是从官方仓库fork的
-uv sync # 用来1.依照pyproject安装（更新）环境，2.构建整个项目（会把整个项目构建成一个包，过程中忽略mmdet文件夹）可能会遇到没安装torch的问题
-source .venv/bin/activate
-uv pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117 --index-url https://download.pytorch.org/whl/cu117 
-uv sync 
-uv run mim install "mmcv==2.0.1"
-uv sync
-```
-=======
-```
-git clone https://github.com/your-org/chartocr.git
+git clone git@github.com:analytistic/ChartOcr.git
 cd ChartOcr
-git submodule update --init --recursive # 初始化子模块mmdet，这里子模块的修改有自己的git仓库，是从官方仓库fork的
-uv sync
+git submodule update --init --recursive # 初始化子模块mmdet,这里子模块的修改有自己的git仓库,是从官方仓库fork的
+uv sync # 用来1.依照pyproject安装(更新)环境,2.构建整个项目(会把整个项目构建成一个包,过程中忽略mmdet文件夹)可能会遇到没安装torch的问题
 source .venv/bin/activate
->>>>>>> extractor/lineformer
 
-#先安装ssetuptools>=75.3.2和torch
+# 先安装setuptools和torch
 uv pip install setuptools>=75.3.2
 uv pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117 --index-url https://download.pytorch.org/whl/cu117
+uv sync
 
-#可编译安装mmdet
+# 可编译安装mmdet
 cd mmdetection
 git checkout v2.28.2
-git checkout -b <分支名>
+git checkout -b feature/lineformerv2.28.2  # 或其他分支名
 cd ..
 uv pip install -e mmdetection --no-build-isolation
 uv sync
-uv mim install mmcv-full
-
-
+uv run mim install "mmcv-full==1.7.1"
 ```
 
-
-fork/main         →  跟踪官方 main 保持同步，不用做开发
+fork/main         →  跟踪官方 main 保持同步,不用做开发
 fork/for_chartocr → 用作子模块的合并分支
 
 配置提交身份
+
+```bash
 git config user.name "你的名字"
 git config user.email "你的邮箱"
+```
 
 开发新功能分支
+
+```bash
 git checkout -b feature/xxx
+```
