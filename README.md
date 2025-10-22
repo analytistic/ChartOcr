@@ -9,11 +9,7 @@ git clone https://github.com/analytistic/ChartOcr.git
 git clone git@github.com:analytistic/ChartOcr.git
 cd ChartOcr
 git submodule update --init --recursive
-uv sync # 如果显示依赖torch报错,先进入环境,手动安装torch
-source .venv/bin/activate
-uv pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117 --index-url https://download.pytorch.org/whl/cu117 
-uv sync 
-uv run mim install "mmcv==2.0.1"
+bash install.sh
 uv sync
 ```
 
