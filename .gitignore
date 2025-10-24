@@ -12,6 +12,11 @@ data/
 .venv
 
 #权重文件
-*.pth  
+*.pth
+
+#图片文件
+*png
+*jpg
+*tif
 
 
