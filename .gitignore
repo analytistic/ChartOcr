@@ -11,12 +11,12 @@ data/
 # Virtual environments
 .venv
 
-##权重文件
-#*.pth
-#
-##图片文件
-#*png
-#*jpg
-#*tif
+#权重文件
+*.pth
 
+#图片文件
+*png
+*jpg
+*tif
 
+module/detector/result/
