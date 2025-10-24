@@ -15,8 +15,8 @@ data/
 *.pth
 
 #图片文件
-*png
-*jpg
-*tif
+*.png
+*.jpg
+*.tif
 
 module/detector/result/
