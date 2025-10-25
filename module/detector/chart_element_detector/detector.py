@@ -22,45 +22,58 @@ class ChartDetector:
     def _tojson(self, input):
         pass
 
-    def _combinebbox(self, input, thr1, thr2):
+    def _combinebbox(self, input, thr1, thr2, area=(True, True), axis='y'):
         """
         合并图例框, xlabel, ylabel, other, legend_label 合并y_mid 命中的框， 去除扁框，去除绘图区外的框
         input: list[array, plot]
         thr1: bbox_set 的阈值
         thr2: 按y轴差合并框时, y轴差的阈值
+        area: 按x, y区域筛选
+        axis: 按x, y轴合并框
         """
         if input[-1] is None:
             return None
         
+
+
+        
         x1, y1, x2, y2, _ = input[-1][0]
         bbox_set = input[:-1]
+        axis1, axis2 = (3, 4) if axis == 'y' else (1, 2)
 
         bbox_set = np.concatenate(bbox_set, axis=0)
 
         mask = (
-            (bbox_set[:, 0] >= x1) &
-            (bbox_set[:, 2] <= x2) &
-            (bbox_set[:, 1] >= y1) &
-            (bbox_set[:, 3] <= y2) &
+            ((bbox_set[:, 0] >= x1) | (not area[0])) &
+            ((bbox_set[:, 2] <= x2) | (not area[0])) &
+            ((bbox_set[:, 1] >= y1) | (not area[1])) &
+            ((bbox_set[:, 3] <= y2) | (not area[1])) &
             (bbox_set[:, 4] >= thr1)
         )
+        if not mask.any():
+            return bbox_set
+
         bbox_set = bbox_set[mask][:, [4, 0, 2, 1, 3]] # M, 5
 
-        diff_y_1 = np.abs(bbox_set[:, 1, None] - bbox_set[None, :, 1]) # M, M
-        diff_y_2 = np.abs(bbox_set[:, 3, None] - bbox_set[None, :, 3]) # M, M
-        diff_y_0 = np.abs(bbox_set[:, 3] - bbox_set[:, 4]) # M
 
-        diff_y_0, index = self.filter.filter(diff_y_0)
-        bbox_set = bbox_set[index]
+        diff_axis_1 = np.abs(bbox_set[:, axis1, None] - bbox_set[None, :, axis1]) # M, M
+        diff_axis_2 = np.abs(bbox_set[:, axis2, None] - bbox_set[None, :, axis2]) # M, M
 
-        diff_y_1 = diff_y_1[np.ix_(index, index)]
-        diff_y_2 = diff_y_2[np.ix_(index, index)]
-        diff_y_0 = np.minimum(diff_y_0[:, None], diff_y_0[None, :]) * thr2
-        merge_pair = (diff_y_1 <= diff_y_0) | (diff_y_2 <= diff_y_0)
+        diff_axis_0 = np.abs(bbox_set[:, axis1] - bbox_set[:, axis2]) # M
+
+
+        diff_axis_0 = np.minimum(diff_axis_0[:, None], diff_axis_0[None, :]) * thr2
+        merge_pair = (diff_axis_1 <= diff_axis_0) | (diff_axis_2 <= diff_axis_0)
+
+        if axis == 'x':
+            diff_axis_12 = np.abs(bbox_set[:, axis1, None] - bbox_set[None, :, axis2]) # M, M
+            cross_mean = np.mean(np.min(diff_axis_12, axis=1))
+            merge_pair = merge_pair | (diff_axis_12 <= cross_mean)
+
         np.fill_diagonal(merge_pair, False)
 
         if not merge_pair.any():
-            return bbox_set
+            return bbox_set[:, [1, 3, 2, 4, 0]]
         
         n_comp, labels = connected_components(csr_matrix(merge_pair), directed=False)
 
@@ -116,14 +129,38 @@ class ChartDetector:
         rgb_bbox = result[9]
         other_bbox = result[3]
         plotarea_bbox = result[2]
+        mark_label = result[13]
+        x_axis_area = result[16]
+        y_axis_area = result[15]
+
 
         legendlabel_bbox = self._combinebbox(
-            input=[legendlabel_bbox, other_bbox, xlabel_bbox, ylabel_bbox, plotarea_bbox],
+            input=[legendlabel_bbox, other_bbox, xlabel_bbox, ylabel_bbox, mark_label, plotarea_bbox],
             thr1=self.cfg.detector.combine_legend.thr1,
-            thr2=self.cfg.detector.combine_legend.thr2
+            thr2=self.cfg.detector.combine_legend.thr2,
+            area=(True, True),
+            axis='y',
+        )
+
+        xlabel_bbox = self._combinebbox(
+            input=[xlabel_bbox, x_axis_area],
+            thr1=self.cfg.detector.combine_xlabel.thr1,
+            thr2=self.cfg.detector.combine_xlabel.thr2,
+            area=(False, True), 
+            axis='x',
+        )
+
+        ylabel_bbox = self._combinebbox(
+            input=[ylabel_bbox, y_axis_area],
+            thr1=self.cfg.detector.combine_ylabel.thr1,
+            thr2=self.cfg.detector.combine_ylabel.thr2,
+            area=(True, False), 
+            axis='y',
         )
 
         result[10] = legendlabel_bbox
+        result[4] = xlabel_bbox
+        result[5] = ylabel_bbox
         result[9] = np.empty((0, 5))
         result[12] = np.empty((0, 5))
 
@@ -143,16 +180,6 @@ class ChartDetector:
         """
         result = self.predict(img_pth)
         result, _ = self.postprocess(result)
-
-
-
-
-
-
-
-
-
-
 
 
         return None

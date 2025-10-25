@@ -9,4 +9,15 @@ thr = 1.5
 
 [detector.combine_legend]
 thr1 = 0.3
-thr2 = 0.05
+thr2 = 0.1
+
+
+
+[detector.combine_xlabel]
+thr1 = 0.3
+thr2 = 0.1
+
+
+[detector.combine_ylabel]
+thr1 = 0.3
+thr2 = 0.1
