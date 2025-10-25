@@ -6,8 +6,19 @@ dist/
 wheels/
 *.egg-info
 data/
-*.pth
+
 
 
 # Virtual environments
 .venv
+
+
+
+# 权重
+*.pth
+
+# 其他
+*.log
+
+# results
+results/
