@@ -6,8 +6,7 @@ import numpy as np
 
 class Abnormal_filter:
     """
-    异常过滤, 接受cfg或者直接静态调用
-    
+    异常过滤
     """
 
     def __init__(self, cfg=None):
