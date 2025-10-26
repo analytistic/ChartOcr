@@ -1,0 +1,74 @@
+import numpy as np 
+
+
+
+
+
+class Abnormal_filter:
+    """
+    异常过滤
+    """
+
+    def __init__(self, cfg=None):
+
+        self.cfg = cfg
+        self.method = cfg.method if cfg is not None else 'iqr'
+        self.thr = cfg.thr if cfg is not None else 1.5
+
+
+
+    @staticmethod
+    def mad_mask(x, thr=3.5):
+        x = np.asarray(x)
+        median = np.median(x)
+        abs_dev = np.abs(x - median)
+        mad = np.median(abs_dev)
+        if mad == 0:
+            return np.zeros_like(x, dtype=bool)
+        modified_z_score = 0.6745 * abs_dev / mad
+        return modified_z_score > thr
+    
+
+    @staticmethod
+    def iqr_mask(x, k=1.5):
+        x = np.asarray(x)
+        q1 = np.percentile(x, 25)
+        q3 = np.percentile(x, 75)
+        iqr = q3 - q1
+        if iqr == 0:
+            return np.zeros_like(x, dtype=bool)
+        lower = q1 - k * iqr
+        upper = q3 + k * iqr
+        return (x < lower) | (x > upper)
+    
+    @staticmethod
+    def zscore_mask(x, thr=3.0):
+        x = np.asarray(x)
+        mean = np.mean(x)
+        std = np.std(x)
+        if std == 0:
+            return np.zeros_like(x, dtype=bool)
+        z_scores = (x - mean) / std
+        return np.abs(z_scores) > thr
+    
+
+    def detect(self, x):
+        if self.method == 'mad':
+            return self.mad_mask(x, thr=self.thr)
+        elif self.method == 'iqr':
+            return self.iqr_mask(x, k=self.thr)
+        elif self.method == 'zscore':
+            return self.zscore_mask(x, thr=self.thr)
+        else:
+            raise ValueError(f"Unknown method: {self.method}")
+        
+
+    def filter(self, x):
+        """
+        returns filtered x, indices
+        """
+        x = np.asarray(x)
+        mask = self.detect(x)
+        return x[~mask], np.where(~mask)[0]
+
+

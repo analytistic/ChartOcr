@@ -1,0 +1,28 @@
+[detector]
+config_path = 'module/detector/chart_element_detector/config/cascade_rcnn_swin-t_fpn_LGF_VCE_PCE_coco_focalsmoothloss.py'
+checkpoint_path = 'module/detector/chart_element_detector/checkpoint.pth'
+device = 'cpu'
+
+[detector.filter]
+method = 'iqr'
+thr = 1.5
+
+[detector.combine_legend]
+thr1 = 0.3
+thr2 = 0.1
+
+
+
+[detector.combine_xlabel]
+thr1 = 0.3
+thr2 = 0.1
+
+
+[detector.combine_ylabel]
+thr1 = 0.3
+thr2 = 0.1
+
+[detector.getRGB]
+thr = 0.3
+back_color_thr = 250
+color_num = 3
