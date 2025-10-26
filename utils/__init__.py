@@ -17,4 +17,7 @@ __all__ = [
     'mad_mask',
     'iqr_mask',
     'zscore_mask',
+    'ChartElementResult',
+    'OcrResult',
+    'DetectionResult',
 ]
