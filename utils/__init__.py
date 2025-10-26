@@ -1,6 +1,11 @@
 from .tools import (
     Abnormal_filter,
 )
+from .types import (
+    ChartElementResult,
+    OcrResult,
+    DetectionResult,
+)
 
 
 mad_mask = Abnormal_filter.mad_mask
