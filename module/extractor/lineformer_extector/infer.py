@@ -46,18 +46,19 @@ def get_distinct_colors(n):
     huePartition = 1.0 / (n + 1) 
     return (hsv_to_bgr(huePartition * value, 1.0, 1.0) for value in range(0, n))
 
-
+# load model
 def load_model(config, ckpt, device):
     global model
     model = init_detector(config, ckpt, device=device)
     return
 
-
+# 获取实例分割
 def do_instance(model, img, score_thr=0.3):
     # test a single image
     result = inference_detector(model, img)
     return parse_result(result, score_thr)
 
+# 解析结果
 def parse_result(result, score_thresh=0.3):
     line_data = result
     # print(type(result))
@@ -65,7 +66,7 @@ def parse_result(result, score_thresh=0.3):
     inst_masks = list(itertools.compress(masks, ((bbox[:, 4] > score_thresh).tolist())))
     return inst_masks
 
-
+# 绘制线条
 def draw_lines(img, masks):
     annot_img = img.copy()
     colors = list(get_distinct_colors(len(masks)))
@@ -128,6 +129,7 @@ def connect_lines(img):
     return img
 
 
+#插值
 def interpolate(line_ds, inter_type='linear'):
     """
     pred_ds: predicted data series
@@ -171,6 +173,7 @@ def interpolate(line_ds, inter_type='linear'):
     return inter_line_ds
 
  
+# 后处理
 def post_process(inst_masks):
     post_process_mask = []
     for i in range(len(inst_masks)):
@@ -178,6 +181,7 @@ def post_process(inst_masks):
 
     return post_process_mask
 
+# 根据变换调整预测数据序列
 def rescale_pred_ds(ds, transformation):
     ds = copy.deepcopy(ds)
     (sx, sy, tx_crop, ty_crop, tx_padd, ty_padd) = transformation
@@ -189,12 +193,22 @@ def rescale_pred_ds(ds, transformation):
             pt['y'] = int((pt['y']-ty_padd) / sy) + ty_crop
     return ds
 
+# 获取数据序列
 def get_dataseries(img, annot=None, to_clean=False, post_proc=False, mask_kp_sample_interval=10, return_masks=False):
     """
         img: chart image as numpy array (3 channel) 
         annot: json annot object in PMC format (required for cleaning the chart image before data extraction)
         mask_kp_sample_interval: interval to sample points from predicted line mask to get data series
         returns data series in pmc task 6a format ('visual elements') => list of lines, each a list of {x:, y: } points w.r.t original image
+    """
+    """
+        img: 图表图像，3 通道的 numpy 数组
+        annot: JSON 注释对象，格式为 PMC（用于清理图表图像，以便在提取数据之前使用）
+        to_clean: 是否需要清理图像
+        post_proc: 是否需要对掩码进行后处理
+        mask_kp_sample_interval: 从预测的线掩码中采样点以获取数据序列的间隔
+        return_masks: 是否返回掩码
+        返回数据序列，格式为 PMC 任务 6a（视觉元素）=> 每条线是一个 {x:, y: } 点列表，相对于原始图像
     """
     global model
     # clean the image
@@ -238,7 +252,7 @@ def get_dataseries(img, annot=None, to_clean=False, post_proc=False, mask_kp_sam
     if to_clean: 
         pred_ds = rescale_pred_ds(pred_ds, transformation)
     if return_masks:
-        return pred_ds, inst_masks
+        return pred_ds, inst_masks # 返回预测数据序列和掩码
     else:
         return pred_ds
 
