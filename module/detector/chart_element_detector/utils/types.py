@@ -10,6 +10,10 @@ DEFAULT_CHART_CLASSES = [
     'x_axis_area', 'tick_grouping'
 ]
 
+DEFAULT_OCR_CLASSES = [
+    'xlabel', 'ylabel', 'x_title', 'y_title', 'legend_label',
+]
+
 @dataclass
 class DetectionResult:
     bboxes_list: List[np.ndarray] = field(default_factory=list)
@@ -29,14 +33,16 @@ class DetectionResult:
     def get_bboxes(self, class_name: str) -> np.ndarray:
         try:
             return self.bboxes_list[self._name2index[class_name]]
-        except KeyError:
-            raise ValueError(f"Unknown class name: {class_name}")   
+        except Exception:
+            return np.empty((0, 5))
+
 
     def set_bboxes(self, class_name: str, bboxes: np.ndarray):
         try:
             self.bboxes_list[self._name2index[class_name]] = bboxes
-        except KeyError:
-            raise ValueError(f"Unknown class name: {class_name}")
+        except Exception:
+            raise ValueError(f"Invalid class name: {class_name}")
+        
 
     def copy(self) -> 'DetectionResult':
         return DetectionResult(
@@ -46,5 +52,15 @@ class DetectionResult:
     
     def to_list(self) -> List[np.ndarray]:
         return self.bboxes_list
+    
+
+@dataclass
+class OcrResult:
+    class_names: List[str] = field(default_factory=lambda: DEFAULT_OCR_CLASSES.copy())
+    result_dict: Dict[str, List[str]] = field(default_factory=dict)
+
+    def __post_init__(self):
+        self.result_dict = {name: [] for name in self.class_names}
+
 
 

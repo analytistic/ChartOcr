@@ -1,14 +1,14 @@
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Any
-from module.detector.chart_element_detector.utils.types import DetectionResult
+from module.detector.chart_element_detector.utils.types import DetectionResult, OcrResult
 import numpy as np
 
 
 @dataclass
 class LegendLabel:
     text: List[str]             
-    bbox: List[np.ndarray]      
-    color: List[np.ndarray]
+    bbox: np.ndarray      
+    color: np.ndarray
     
 @dataclass
 class LegendInfo:
@@ -17,13 +17,13 @@ class LegendInfo:
 
 @dataclass
 class AxisLabel:
-    value: np.ndarray           
-    bbox: List[np.ndarray]
+    value: List[str]         
+    bbox: np.ndarray
 
 @dataclass
 class AxisInfo:
-    x_title: str                 
-    y_title: str                 
+    x_title: List[str]                 
+    y_title: List[str]                 
     x_label: AxisLabel          
     y_label: AxisLabel
 
@@ -38,7 +38,7 @@ class ChartElementResult:
     {
         "legends":{
             "area": np.ndarray,
-            "label":{
+            "legendlabel":{
                 "text": [str],
                 "bbox": [np.ndarray],
                 "color": [np.ndarray],
@@ -70,12 +70,39 @@ class ChartElementResult:
         cls,
         detection_result: DetectionResult,
         legend_colors: np.ndarray,
-        text: Any,
+        ocr_result: OcrResult,
     ):
-        pass
+        legends = LegendInfo(
+            area=detection_result.get_bboxes("legend_area"),
+            label=LegendLabel(
+                text=ocr_result.result_dict.get("legend_label", []),
+                bbox=detection_result.get_bboxes("legend_label"),
+                color=legend_colors
+            )
+        )
 
+        axis = AxisInfo(
+            x_title=ocr_result.result_dict.get("x_title", []),
+            y_title=ocr_result.result_dict.get("y_title", []),
+            x_label=AxisLabel(
+                value=ocr_result.result_dict.get("xlabel", []),
+                bbox=detection_result.get_bboxes("xlabel"),
+            ),
+            y_label=AxisLabel(
+                value=ocr_result.result_dict.get("ylabel", []),
+                bbox=detection_result.get_bboxes("ylabel"),
+            ),
+        )
 
+        plot = PlotInfo(
+            bbox=detection_result.get_bboxes("plot_area")[0],
+        )
 
+        return cls(
+            legends=legends,
+            axis=axis,
+            plot=plot
+        )
 
 
 

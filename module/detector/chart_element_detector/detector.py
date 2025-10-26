@@ -1,22 +1,35 @@
 from mmdet.apis import init_detector, inference_detector
 import mmcv
 import numpy as np
-from  utils import Abnormal_filter
-from .utils.types import DetectionResult
+from  utils import Abnormal_filter, ChartElementResult  
+from .utils.types import DetectionResult, OcrResult
 from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import connected_components
 import colorgram
 from PIL import Image
 
+from paddleocr import PaddleOCR
 
 
 class ChartDetector:
     def __init__(self, cfg):
         self.cfg = cfg
         self.model = init_detector(self.cfg.detector.config_path, self.cfg.detector.checkpoint_path, device=self.cfg.detector.device)
+        self.ocr = PaddleOCR(
+            use_angle_cls=True,
+            lang=cfg.detector.ocr.lang,
+            use_gpu=cfg.detector.device=='cuda',
+            show_log=False,
+            det=False,
+            rec=True,
+            drop_score=self.cfg.detector.ocr.drop_score,
+            page_num=self.cfg.detector.ocr.page_num,
+            use_mp=False,
+        )
         self.classes = self.model.CLASSES
         self.filter = Abnormal_filter(cfg.detector.filter)
         self.dete_result = DetectionResult(class_names=list(self.classes))
+        self.ocr_result = OcrResult()
 
     @staticmethod
     def extractRGB(img, rgb_bbox, back_color_thr=253, color_num=5):
@@ -34,9 +47,61 @@ class ChartDetector:
                 color = np.array([0, 0, 0], dtype=np.uint8)
             colors.append(color)
         return np.array(colors)
+    
+    def _batch_ocr_class(self, img, bboxes):
+        """
+        处理bboxes ocr提取
+        """
+        if len(bboxes) == 0:
+            return []
+        
+        crops = []
+        for bbox in bboxes:
+            x1, y1, x2, y2, _ = bbox
+            crop = img[int(y1):int(y2), int(x1):int(x2)]
+            crops.append(crop)
 
-    def _tojson(self, input):
-        pass
+        self.ocr.page_num = 0
+
+        if self.cfg.detector.ocr.batch:
+            results = self.ocr.ocr(
+                crops,
+                det=False,
+                rec=True,
+                cls=True,
+            )
+        else:
+            results = []
+            for crop in crops:
+                try:
+                    result = self.ocr.ocr(
+                        crop,
+                        det=False,
+                        rec=True,
+                        cls=True,
+                )
+                except Exception as e:
+                    try:
+                        result = self.ocr.ocr(
+                            crop[:, :int(self.cfg.detector.ocr.crop_scale * crop.shape[1]), :],
+                            det=False,
+                            rec=True,
+                            cls=True,
+                        )
+                        print(result)       
+                    except Exception as e:
+                        result = [([], "")]
+                results.append(result)
+
+        texts = []
+        for i, result in enumerate(results):
+            if result:
+                lines = [line[0] for line in result[0]]
+                text = ' '.join([line for line in lines])
+                texts.append(text)
+            else:
+                texts.append("")
+        return texts
 
     def _combinebbox(self, input, thr1, thr2, area=(True, True, None), axis='y'):
         """
@@ -109,37 +174,56 @@ class ChartDetector:
             rgb_colors = self.extractRGB(img, legend_label, back_color_thr=back_color_thr, color_num=color_num)
             return legend_label, rgb_colors
         
-        rgb_bbox = rgb_bbox[rgb_bbox[:, 4] >= thr]
+        rgb_bbox = rgb_bbox[(rgb_bbox[:, 4] >= thr) & (rgb_bbox[:, 0] <= legend_label[:, 0].min())]
         label_mid_y = legend_label[:, [1, 3]].mean(axis=1)
         rgb_mid_y = rgb_bbox[:, [1, 3]].mean(axis=1)
         label_mid_h = np.mean(legend_label[:, 3] - legend_label[:, 1])
           
         diff_y = np.abs(label_mid_y[:, None] - rgb_mid_y[None, :])
         diff_y_sign = label_mid_y[:, None] - rgb_mid_y[None, :]
-        min_index = np.argmin(diff_y, axis=1)
-        diff_y = diff_y[np.arange(len(label_mid_y)), min_index]
-        diff_y_sign = diff_y_sign[np.arange(len(label_mid_y)), min_index]
-        mask = (diff_y <= label_mid_h)
-        rgb_bbox = rgb_bbox[min_index]
-
-        if (~mask).any():
-            rgb_mid_h = np.mean(rgb_bbox[mask][:, 3] - rgb_bbox[mask][:, 1]) if mask.any() else label_mid_h
-            mid_diff_y = diff_y_sign[mask].mean() if mask.any() else 0
-            redete_index = ~mask
-            x1 = rgb_bbox[mask, 0].mean() if mask.any() else legend_area[0]
-            x2 = rgb_bbox[mask, 2].mean() if mask.any() else legend_area[2]
-            y1 = label_mid_y[redete_index] + mid_diff_y - rgb_mid_h / 2
-            y2 = label_mid_y[redete_index] + mid_diff_y + rgb_mid_h / 2
-            rgb_bbox[redete_index, 0] = x1
-            rgb_bbox[redete_index, 2] = x2
-            rgb_bbox[redete_index, 1] = y1
-            rgb_bbox[redete_index, 3] = y2
-
+        try:
+            min_index = np.argmin(diff_y, axis=1)
+            diff_y = diff_y[np.arange(len(label_mid_y)), min_index]
+            diff_y_sign = diff_y_sign[np.arange(len(label_mid_y)), min_index]
+            mask = (diff_y <= label_mid_h)
+            rgb_bbox = rgb_bbox[min_index]
+            if (~mask).any():
+                rgb_mid_h = np.mean(rgb_bbox[mask][:, 3] - rgb_bbox[mask][:, 1]) if mask.any() else label_mid_h
+                mid_diff_y = diff_y_sign[mask].mean() if mask.any() else 0
+                redete_index = ~mask
+                x1 = rgb_bbox[mask, 0].mean() if mask.any() else legend_area[0]
+                x2 = rgb_bbox[mask, 2].mean() if mask.any() else legend_area[2]
+                y1 = label_mid_y[redete_index] + mid_diff_y - rgb_mid_h / 2
+                y2 = label_mid_y[redete_index] + mid_diff_y + rgb_mid_h / 2
+                rgb_bbox[redete_index, 0] = x1
+                rgb_bbox[redete_index, 2] = x2
+                rgb_bbox[redete_index, 1] = y1
+                rgb_bbox[redete_index, 3] = y2
+        except:
+                rgb_bbox = np.zeros_like(legend_label)
+                x1 = legend_area[0]
+                x2 = legend_label[:, 0].mean()
+                y1 = label_mid_y - label_mid_h / 2
+                y2 = label_mid_y + label_mid_h / 2
+                rgb_bbox[np.arange(legend_label.shape[0]), 0] = x1
+                rgb_bbox[np.arange(legend_label.shape[0]), 2] = x2
+                rgb_bbox[np.arange(legend_label.shape[0]), 1] = y1
+                rgb_bbox[np.arange(legend_label.shape[0]), 3] = y2 
+        rgb_bbox[:, -1] = 0.9
         rgb_colors = self.extractRGB(img, rgb_bbox, back_color_thr=back_color_thr, color_num=color_num)
         return rgb_bbox, rgb_colors
 
-    def _toocr(self, input):
-        pass
+    def toocr(self, img):
+        """
+        ocr识别
+        Return: 
+        """
+        for class_name in self.ocr_result.class_names:
+            bboxes = self.dete_result.get_bboxes(class_name)
+            texts = self._batch_ocr_class(img, bboxes)
+            self.ocr_result.result_dict[class_name] = texts
+        
+        return self.ocr_result
 
     def predict(self, img_pth):
         result = inference_detector(self.model, img_pth)
@@ -166,6 +250,8 @@ class ChartDetector:
         y_axis_area = self.dete_result.get_bboxes('y_axis_area')
         rgb_bbox = self.dete_result.get_bboxes('legend_patch')
         legend_area = self.dete_result.get_bboxes('legend_area')
+        x_title_bbox = self.dete_result.get_bboxes('x_title')
+        y_title_bbox = self.dete_result.get_bboxes('y_title')
 
 
         legend_area_temp = legend_area[0] if legend_area is not None and legend_area[0][-1] >= self.cfg.detector.combine_legend.thr1 else None
@@ -203,11 +289,17 @@ class ChartDetector:
             color_num=self.cfg.detector.getRGB.color_num,
         )
 
+        x_title_bbox = x_title_bbox[[0], :] if x_title_bbox[0][-1] >= self.cfg.detector.bbox_filter.thr else np.empty((0, 5))
+        y_title_bbox = y_title_bbox[[0], :] if y_title_bbox[0][-1] >= self.cfg.detector.bbox_filter.thr else np.empty((0, 5))
+        legend_area = legend_area[[0], :] if legend_area[0][-1] >= self.cfg.detector.bbox_filter.thr else np.empty((0, 5))
+
         self.dete_result.set_bboxes('legend_label', legendlabel_bbox)
         self.dete_result.set_bboxes('xlabel', xlabel_bbox)
         self.dete_result.set_bboxes('ylabel', ylabel_bbox)
         self.dete_result.set_bboxes('legend_patch', rgb_bbox)
-        self.dete_result.set_bboxes('legend_area', np.empty((0, 5)))
+        self.dete_result.set_bboxes('legend_area', legend_area)
+        self.dete_result.set_bboxes('x_title', x_title_bbox)
+        self.dete_result.set_bboxes('y_title', y_title_bbox)
         return rgb_colors
 
     def getjson(self, img_pth):
@@ -217,9 +309,13 @@ class ChartDetector:
         img = mmcv.imread(img_pth)
         self.dete_result.bboxes_list = self.predict(img_pth)
         rgb_colors = self.postprocess(img)
-
-
-        return None
+        _ = self.toocr(img)
+        result = ChartElementResult.from_detectionresult(
+            detection_result=self.dete_result,
+            legend_colors=rgb_colors,
+            ocr_result=self.ocr_result,
+        )
+        return result
     
     @staticmethod
     def plot(model, img_pth, result, score_thr, out_file='result.jpg'):
