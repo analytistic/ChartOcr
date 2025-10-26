@@ -47,3 +47,4 @@ class DetectionResult:
     def to_list(self) -> List[np.ndarray]:
         return self.bboxes_list
 
+
