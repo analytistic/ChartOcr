@@ -19,7 +19,9 @@ if __name__ == "__main__":
     img = mmcv.imread('/Users/alex/project/chartocr/ChartOcr/data/input/30.tif')
     result_copy = [r.copy()  for r in result0]
     result0[15] = np.empty((0, 5))
-    result1, _ = detector.postprocess(result_copy, img)
+    detector.dete_result.bboxes_list = result_copy
+    _ = detector.postprocess(img)
+    result1 = detector.dete_result.to_list()
 
     result1[12] = np.empty((0, 5))
     result1[13] = np.empty((0, 5))

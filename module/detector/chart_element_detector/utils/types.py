@@ -1,32 +1,49 @@
-from dataclasses import dataclass
-from typing import Dict, List, Any
+from dataclasses import dataclass, field
+from typing import Dict, List, Optional
 import numpy as np
 
-@dataclass
-class RawDetections:
-    """直接来自 detector.predict 的原始 list[np.ndarray]"""
-    by_list: List[np.ndarray]
-    by_name: Dict[str, np.ndarray]
 
-    @staticmethod
-    def from_list(result_list: List[np.ndarray], names: List[str]) -> "RawDetections":
-        by_name = {names[i]: (result_list[i] if i < len(result_list) else np.empty((0,5), dtype=np.float32))
-                   for i in range(len(names))}
-        return RawDetections(by_list=[r.copy() for r in result_list], by_name=by_name)
+DEFAULT_CHART_CLASSES = [
+    'x_title', 'y_title', 'plot_area', 'other', 'xlabel', 'ylabel',
+    'chart_title', 'x_tick', 'y_tick', 'legend_patch', 'legend_label',
+    'legend_title', 'legend_area', 'mark_label', 'value_label', 'y_axis_area',
+    'x_axis_area', 'tick_grouping'
+]
 
 @dataclass
-class PostProcessResult:
-    """后处理后的 bbox（key -> ndarray (N,5)）和其它中间信息（如颜色）"""
-    boxes: Dict[str, np.ndarray]
-    legend_colors: Dict[int, np.ndarray]  # legend index -> color (e.g. RGB)
+class DetectionResult:
+    bboxes_list: List[np.ndarray] = field(default_factory=list)
+    class_names: List[str] = field(default_factory=lambda: DEFAULT_CHART_CLASSES.copy())
+    _name2index: Dict[str, int] = field(default_factory=dict, init=False, repr=False)
 
-@dataclass
-class ChartElements:
-    """最终结构化输出，按字段明确命名便于下游使用"""
-    xlabel: np.ndarray
-    ylabel: np.ndarray
-    legend_labels: np.ndarray
-    plot_area: np.ndarray
-    other: np.ndarray
-    # 可扩展字段...
-    meta: Dict[str, Any] = None
+    def __post_init__(self):
+        if not self.bboxes_list:
+            self.bboxes_list = [np.empty((0, 5)) for _ in self.class_names]
+        if len(self.bboxes_list) != len(self.class_names):
+            raise ValueError(
+                f"bboxes_list ({len(self.bboxes_list)})"
+                f"class_names ({len(self.class_names)})"
+            )
+        self._name2index = {name: idx for idx, name in enumerate(self.class_names)}
+        
+    def get_bboxes(self, class_name: str) -> np.ndarray:
+        try:
+            return self.bboxes_list[self._name2index[class_name]]
+        except KeyError:
+            raise ValueError(f"Unknown class name: {class_name}")   
+
+    def set_bboxes(self, class_name: str, bboxes: np.ndarray):
+        try:
+            self.bboxes_list[self._name2index[class_name]] = bboxes
+        except KeyError:
+            raise ValueError(f"Unknown class name: {class_name}")
+
+    def copy(self) -> 'DetectionResult':
+        return DetectionResult(
+            bboxes_list=[b.copy() for b in self.bboxes_list],
+            class_names=self.class_names.copy()
+        )
+    
+    def to_list(self) -> List[np.ndarray]:
+        return self.bboxes_list
+

@@ -2,6 +2,7 @@ from mmdet.apis import init_detector, inference_detector
 import mmcv
 import numpy as np
 from  utils import Abnormal_filter
+from .utils.types import DetectionResult
 from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import connected_components
 import colorgram
@@ -15,6 +16,7 @@ class ChartDetector:
         self.model = init_detector(self.cfg.detector.config_path, self.cfg.detector.checkpoint_path, device=self.cfg.detector.device)
         self.classes = self.model.CLASSES
         self.filter = Abnormal_filter(cfg.detector.filter)
+        self.dete_result = DetectionResult(class_names=list(self.classes))
 
     @staticmethod
     def extractRGB(img, rgb_bbox, back_color_thr=253, color_num=5):
@@ -46,7 +48,7 @@ class ChartDetector:
         return: list[array]
         """
         if area[-1] is None:
-            return None
+            return np.empty((0, 5))
         
         px1, py1, px2, py2, _ = area[-1]
         bbox_set = input
@@ -136,21 +138,14 @@ class ChartDetector:
         rgb_colors = self.extractRGB(img, rgb_bbox, back_color_thr=back_color_thr, color_num=color_num)
         return rgb_bbox, rgb_colors
 
-
-
-
-
-
-
-    def _ocr(self, input):
+    def _toocr(self, input):
         pass
-
 
     def predict(self, img_pth):
         result = inference_detector(self.model, img_pth)
         return result
     
-    def postprocess(self, result, img):
+    def postprocess(self, img):
         """
         后处理
         1. 合并图例检测框, 去除x,ylabel异常框
@@ -161,17 +156,16 @@ class ChartDetector:
             img
         return: list[array], list[array]
         """
-        xlabel_bbox = result[4]
-        ylabel_bbox = result[5]
-        legendlabel_bbox = result[10]
-        other_bbox = result[3]
-        plotarea_bbox = result[2]
-        mark_label = result[13]
-        x_axis_area = result[16]
-        y_axis_area = result[15]
-
-        rgb_bbox = result[9]
-        legend_area = result[12]
+        xlabel_bbox = self.dete_result.get_bboxes('xlabel')
+        ylabel_bbox = self.dete_result.get_bboxes('ylabel')
+        legendlabel_bbox = self.dete_result.get_bboxes('legend_label')
+        other_bbox = self.dete_result.get_bboxes('other')
+        plotarea_bbox = self.dete_result.get_bboxes('plot_area')
+        mark_label = self.dete_result.get_bboxes('mark_label')
+        x_axis_area = self.dete_result.get_bboxes('x_axis_area')
+        y_axis_area = self.dete_result.get_bboxes('y_axis_area')
+        rgb_bbox = self.dete_result.get_bboxes('legend_patch')
+        legend_area = self.dete_result.get_bboxes('legend_area')
 
 
         legend_area_temp = legend_area[0] if legend_area is not None and legend_area[0][-1] >= self.cfg.detector.combine_legend.thr1 else None
@@ -209,22 +203,22 @@ class ChartDetector:
             color_num=self.cfg.detector.getRGB.color_num,
         )
 
-        result[10] = legendlabel_bbox
-        result[4] = xlabel_bbox
-        result[5] = ylabel_bbox
-        result[9] = rgb_bbox
-        result[12] = np.empty((0, 5))
+        self.dete_result.set_bboxes('legend_label', legendlabel_bbox)
+        self.dete_result.set_bboxes('xlabel', xlabel_bbox)
+        self.dete_result.set_bboxes('ylabel', ylabel_bbox)
+        self.dete_result.set_bboxes('legend_patch', rgb_bbox)
+        self.dete_result.set_bboxes('legend_area', np.empty((0, 5)))
+        return rgb_colors
 
-        return result, rgb_colors
-
-    
     def getjson(self, img_pth):
         """
         return dict
         """
         img = mmcv.imread(img_pth)
-        result = self.predict(img_pth)
-        result, rgb_colors = self.postprocess(result, img)
+        self.dete_result.bboxes_list = self.predict(img_pth)
+        rgb_colors = self.postprocess(img)
+
+
         return None
     
     @staticmethod
