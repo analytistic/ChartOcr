@@ -33,12 +33,12 @@ def hsv_to_bgr(h, s, v):
 
     return (b, g, r)
 
-# 获取不同的颜色
-def get_distinct_colors(n): 
-    huePartition = 1.0 / (n + 1)  # 计算色相分区
-    return (hsv_to_bgr(huePartition * value, 1.0, 1.0) for value in range(0, n))# 生成颜色
 
-# 判断图像是否为彩色图像
+def get_distinct_colors(n): 
+    huePartition = 1.0 / (n + 1) 
+    return (hsv_to_bgr(huePartition * value, 1.0, 1.0) for value in range(0, n))
+
+
 def is_color(img):
     if img.ndim <=2:
         return False
@@ -49,7 +49,7 @@ def is_color(img):
 
     return True
     
-# 显示图像
+
 def show_img(img, color='gray', is_bgr=False, title='', figsize=None, final_show=True):
     """Show image using plt."""
     
@@ -102,7 +102,7 @@ def get_xrange(bin_line_mask):
     else:
         x_range = None
     return x_range
-# 获取关键点
+
 def get_kp(line_img, interval=10, x_range=None, get_num_lines=False, get_center=True):
     """
         line_img: np.ndarray => black and white binary mask of line
@@ -111,12 +111,6 @@ def get_kp(line_img, interval=10, x_range=None, get_num_lines=False, get_center=
         interval: delta_x at which x,y points are sampled across the line_img
         x_range: Range of x values, [xmin, xmax), within which pred points (x,y) are to be sampled
         returns: a list [{'x': <x_val>, 'y': <y_val>}, ....] of line points found in the binary line_img
-        line_img: np.ndarray => 黑白二值线掩码
-        黑色 => 背景 => 0
-        白色 => 前景线像素 => 255
-        interval: 在线图像上采样 x,y 点的 delta_x
-        x_range: x 值范围，[xmin, xmax)，在该范围内采样预测点 (x,y)
-        返回：线图像中找到的线点列表 [{'x': <x_val>, 'y': <y_val>}, ....]
     """
 
     im_h, im_w = line_img.shape[:2]
@@ -170,7 +164,7 @@ def get_kp(line_img, interval=10, x_range=None, get_num_lines=False, get_center=
             else:
                 kps.extend([{'x':float(x), 'y':y} for y in fg_y])
         
-    res = kps # 返回关键点
+    res = kps
     
     if get_num_lines:
         res = kps, int(np.percentile(num_comps, 85))
@@ -203,7 +197,7 @@ def draw_kps(img, kps, color=(0,255,0), classes=None, **draw_options):
         options.update(draw_options)
         annot_img = cv2.drawMarker(annot_img, (int(kp['x']), int(kp['y'])), **options)
     return annot_img
-#将点列表转换为数组
+
 def points_to_array(pred_ds):
     res = []
     for line in pred_ds:
@@ -214,7 +208,6 @@ def points_to_array(pred_ds):
     return res
 
 # res = line_utils.draw_lines(img, points_to_array(pred_ds))
-# 绘制线
 def draw_lines(img, lines, classes=None):
     if is_color(img):
         annot_img = img.copy()
@@ -239,7 +232,6 @@ def draw_lines(img, lines, classes=None):
 
 
 # Get the line points that would lie between ptA and ptB, according to the bresenham algorithm
-#根据 Bresenham 算法获取 ptA 和 ptB 之间的线点
 def get_interp_points(ptA, ptB, thickness=1):
     # x_interp = np.arange(ptA[0], ptB[0])
     # y_interp = np.interp(x_interp, [ptA[0], ptB[0]], [ptA[1], ptB[1]]).round().astype(int)
@@ -255,7 +247,6 @@ def get_interp_points(ptA, ptB, thickness=1):
     # inter_points = np.stack([x_interp,y_interp], axis=-1)
     return inter_points
 
-#将数组转换为点列表
 def array_to_points(pts_arr):
     pts = [{'x': pt[0], 'y': pt[1]} for pt in pts_arr]
     return pts
