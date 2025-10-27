@@ -12,17 +12,20 @@ def ndarray_to_list(obj):
     else:
         return obj
     
+
+    
 def safe_float(s):
-    s = s.replace('O', '0').replace('o', '0').replace('E', 'e').replace('—', '-').replace('–', '-')
-    s = s.strip()
-    match = re.match(r'10[-‐–](\d+)', s)
+    s = s.replace('O', '0').replace('o', '0').replace('—', '-').replace('–', '-').strip()
+    s = s.replace('E', 'e')
+    if re.match(r'^e[-+]?\d+$', s):
+        s = '1' + s
+    match = re.match(r'^10[-‐–](\d+)$', s)
     if match:
-        if '--' in s or '—-' in s or '–-' in s:
-            return float(f'1e-{match.group(1)}')
+        return float(f'1e-{match.group(1)}')
     try:
         return float(s)
     except:
-        return 0.0
+        return 1e10
     
 
 def list_to_ndarray(obj):

@@ -225,8 +225,8 @@ class ChartDetector:
         
         return self.ocr_result
 
-    def predict(self, img_pth):
-        result = inference_detector(self.model, img_pth)
+    def predict(self, img):
+        result = inference_detector(self.model, img)
         return result
     
     def postprocess(self, img):
@@ -302,12 +302,13 @@ class ChartDetector:
         self.dete_result.set_bboxes('y_title', y_title_bbox)
         return rgb_colors
 
-    def getjson(self, img_pth):
+    def getjson(self, img):
         """
         return dict
         """
-        img = mmcv.imread(img_pth)
-        self.dete_result.bboxes_list = self.predict(img_pth)
+        if isinstance(img, str):
+            img = mmcv.imread(img)
+        self.dete_result.bboxes_list = self.predict(img)
         rgb_colors = self.postprocess(img)
         _ = self.toocr(img)
         result = ChartElementResult.from_detectionresult(

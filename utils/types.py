@@ -41,8 +41,8 @@ class ChartElementResult:
             "area": np.ndarray,
             "legendlabel":{
                 "text": [str],
-                "bbox": [np.ndarray],
-                "color": [np.ndarray],
+                "bbox": np.ndarray,
+                "color": np.ndarray,
             },
         },
         "axis":{
@@ -50,11 +50,11 @@ class ChartElementResult:
             "y_title": (str),
             "x_label":{
                 "value": np.ndarray,
-                "bbox": [np.ndarray],
+                "bbox": np.ndarray,
             },
             "y_label":{
                 "value": np.ndarray,
-                "bbox": [np.ndarray],
+                "bbox": np.ndarray,
             },
         },
         "plot":{
@@ -62,12 +62,9 @@ class ChartElementResult:
         }    
     }
     """
-    legends: LegendInfo
-    axis: AxisInfo
-    plot: PlotInfo
-
-
-
+    legends: LegendInfo = field(default_factory = LegendInfo)
+    axis: AxisInfo = field(default_factory = AxisInfo)
+    plot: PlotInfo = field(default_factory = PlotInfo)
 
     @classmethod
     def from_detectionresult(
@@ -173,8 +170,78 @@ class ChartElementResult:
 
 
 
-
+@dataclass
 class LineResult:
     """
     line extractor result
+    LineResult:{
+        "legends":{
+            "area": np.ndarray,
+            "legendlabel":{
+                "text": [str],
+                "bbox": [np.ndarray], 
+                "color": [np.ndarray],
+                # "patch_bbox" [np.ndarray], 等待添加
+        },
+        x_pixel: [np.ndarray]
+        y_pixel: [np.ndarray]
+    }
     """
+
+    legends: LegendInfo = field(default_factory=LegendInfo)
+    x_pixel: np.ndarray = field(default_factory=lambda: np.empty((0,128)))
+    y_pixel: np.ndarray = field(default_factory=lambda: np.empty((0,128)))
+
+    @classmethod
+    def from_extractresult(
+        cls,
+        legends: LegendInfo,
+        x_pixel: np.ndarray,
+        y_pixel: np.ndarray,
+    ):
+        try:
+            return cls(
+                legends = legends,
+                x_pixel = x_pixel,
+                y_pixel = y_pixel,
+            )
+        except:
+            return cls()
+
+    def save_json(self, pth):
+        try:
+            data = asdict(self)
+            data = ndarray_to_list(data)
+            with open(pth, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            return True
+        except Exception as e:
+            print(f"Error saving JSON: {e}")
+
+    @classmethod
+    def from_dict(cls, data):
+        legends = LegendInfo(
+            area=np.array(data['legends']['area']),
+            label=LegendLabel(
+                text=data['legends']['label']['text'],
+                bbox=np.array(data['legends']['label']['bbox']),
+                color=np.array(data['legends']['label']['color'])
+            )
+        )   
+        
+        x_pixel = np.array(data['x_pixel'])
+        y_pixel = np.array(data['y_pixel'])
+        return cls(
+            legends=legends,
+            x_pixel=x_pixel,
+            y_pixel=y_pixel,
+        )
+    
+    @classmethod
+    def from_json(cls, pth):
+        try:
+            with open(pth, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            return cls.from_dict(data)
+        except Exception as e:
+            return cls()

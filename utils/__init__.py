@@ -5,8 +5,7 @@ from .tools import (
 )
 from .types import (
     ChartElementResult,
-    OcrResult,
-    DetectionResult,
+    LineResult,
 )
 
 
@@ -20,8 +19,7 @@ __all__ = [
     'iqr_mask',
     'zscore_mask',
     'ChartElementResult',
-    'OcrResult',
-    'DetectionResult',
     'ndarray_to_list',
-    'safe_float'
+    'safe_float',
+    'LineResult',
 ]
