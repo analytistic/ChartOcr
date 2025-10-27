@@ -1,8 +1,9 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, asdict
 from typing import Dict, List, Optional, Any
 from module.detector.chart_element_detector.utils.types import DetectionResult, OcrResult
 import numpy as np
-
+from .tools import ndarray_to_list
+import json
 
 @dataclass
 class LegendLabel:
@@ -65,6 +66,9 @@ class ChartElementResult:
     axis: AxisInfo
     plot: PlotInfo
 
+
+
+
     @classmethod
     def from_detectionresult(
         cls,
@@ -95,7 +99,7 @@ class ChartElementResult:
         )
 
         plot = PlotInfo(
-            bbox=detection_result.get_bboxes("plot_area")[0],
+            bbox=detection_result.get_bboxes("plot_area"),
         )
 
         return cls(
@@ -103,6 +107,18 @@ class ChartElementResult:
             axis=axis,
             plot=plot
         )
+    
+
+    def save_json(self, pth):
+        try:
+            data = asdict(self)
+            data = ndarray_to_list(data)
+            with open(pth, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            return True
+        except Exception as e:
+            print(f"Error saving JSON: {e}")
+
 
 
 

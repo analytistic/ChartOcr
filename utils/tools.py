@@ -2,7 +2,15 @@ import numpy as np
 
 
 
-
+def ndarray_to_list(obj):
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    elif isinstance(obj, list):
+        return [ndarray_to_list(i) for i in obj]
+    elif isinstance(obj, dict):
+        return {k: ndarray_to_list(v) for k, v in obj.items()}
+    else:
+        return obj
 
 class Abnormal_filter:
     """

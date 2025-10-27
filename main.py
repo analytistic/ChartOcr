@@ -26,4 +26,4 @@ if __name__ == "__main__":
     # detector.getjson('/Users/alex/project/chartocr/ChartOcr/data/input/3.jpg')
     ChartDetector.plot(detector.model, '/Users/alex/project/chartocr/ChartOcr/data/input/5.jpg', result0, score_thr=0.3, out_file='result_pre.jpg')
     ChartDetector.plot(detector.model, '/Users/alex/project/chartocr/ChartOcr/data/input/5.jpg', result1, score_thr=0.3, out_file='result_post.jpg')
-    print(result)
+    result.save_json('dete_result.json')
