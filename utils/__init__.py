@@ -1,5 +1,7 @@
 from .tools import (
     Abnormal_filter,
+    ndarray_to_list,
+    safe_float
 )
 from .types import (
     ChartElementResult,
@@ -20,4 +22,6 @@ __all__ = [
     'ChartElementResult',
     'OcrResult',
     'DetectionResult',
+    'ndarray_to_list',
+    'safe_float'
 ]

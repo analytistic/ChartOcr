@@ -1,5 +1,5 @@
 import numpy as np 
-
+import re
 
 
 def ndarray_to_list(obj):
@@ -9,6 +9,32 @@ def ndarray_to_list(obj):
         return [ndarray_to_list(i) for i in obj]
     elif isinstance(obj, dict):
         return {k: ndarray_to_list(v) for k, v in obj.items()}
+    else:
+        return obj
+    
+def safe_float(s):
+    s = s.replace('O', '0').replace('o', '0').replace('E', 'e').replace('—', '-').replace('–', '-')
+    s = s.strip()
+    match = re.match(r'10[-‐–](\d+)', s)
+    if match:
+        if '--' in s or '—-' in s or '–-' in s:
+            return float(f'1e-{match.group(1)}')
+    try:
+        return float(s)
+    except:
+        return 0.0
+    
+
+def list_to_ndarray(obj):
+    if isinstance(obj, list):
+        if obj and isinstance(obj[0], list):
+            return np.array(obj)
+        elif obj and not isinstance(obj[0], str):
+            return np.array(obj)
+        else:
+            return obj
+    elif isinstance(obj, dict):
+        return {k: list_to_ndarray(v) for k, v in obj.items()}
     else:
         return obj
 
