@@ -6,6 +6,7 @@ from .tools import ndarray_to_list, list_to_ndarray
 import json
 import pandas as pd
 
+
 @dataclass
 class LegendLabel:
     text: List[str] = field(default_factory=lambda: [""])            
@@ -255,7 +256,7 @@ class PointData:
     point_coordinates: np.ndarray = field(default_factory=lambda: np.empty((128, 2)))
 
     def coordinates_str(self) -> str:
-        return "\n".join([f"{x:.5f},{y:.5f}" for x, y in self.point_coordinates])
+        return "\n".join([f"{x:.5f} {y:.5f}" for x, y in self.point_coordinates])
 
 
 @dataclass
@@ -316,13 +317,14 @@ class ChartOcrResultList:
                     sample = point.sample
                     point_coordinates = point.coordinates_str()
                     rows.append({
-                        "figure_name": figure_name,
+                        "figure_name (id)": figure_name,
                         "figure_index": figure_index,
-                        "x_label": x_label,
-                        "y_label": y_label,
-                        "note": note,
+                        "figure_title": "",
+                        "x-label": x_label,
+                        "y-label": y_label,
                         "sample": sample,
-                        "point_coordinates": point_coordinates
+                        "point_coordinates": point_coordinates,
+                        "note": note,
                     })
         df = pd.DataFrame(rows)
         df.to_excel(save_file, index=False)   

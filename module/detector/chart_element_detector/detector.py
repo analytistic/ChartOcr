@@ -17,7 +17,7 @@ class ChartDetector:
         self.cfg = cfg
         self.model = init_detector(self.cfg.detector.config_path, self.cfg.detector.checkpoint_path, device=self.cfg.detector.device)
         self.ocr = PaddleOCR(
-            rec_model = 'ch_ppocr_server_v2.0_rec',
+            rec_model = cfg.detector.ocr.model,
             use_angle_cls=True,
             lang=cfg.detector.ocr.lang,
             use_gpu=cfg.detector.device=='cuda',

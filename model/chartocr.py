@@ -15,7 +15,7 @@ class ChartOcr:
         self.y_pixeltransform = PixelTransform(cfg)
         self.extractor = LineExtractor(cfg)
 
-    def ocr(self, img):
+    def ocr(self, img, visual_out = None):
         figure_name = []
         if isinstance(img, str):
             if os.path.isfile(img):
@@ -59,12 +59,17 @@ class ChartOcr:
 
             subfigure_result = SubChartOcrResult.from_chartocr(
                 figure_index='',
-                x_label=detector_result.axis.x_title,
-                y_label=detector_result.axis.y_title,
+                x_label=detector_result.axis.x_title[0],
+                y_label=detector_result.axis.y_title[0],
                 note='',
-                samples=detector_result.legends.label.text,
+                samples=extractor_result.legends.label.text,
                 points=points,
             )
+            if visual_out:
+                LineExtractor.plot(img, extractor_result, out_file=f"{visual_out}/{figure_name[i]}.jpg")
+
+
+
             results.append(ChartOcrResult(figure_name=figure_name[i], sub_figure=[subfigure_result]))
 
         return ChartOcrResultList(results)

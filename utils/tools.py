@@ -1,5 +1,6 @@
 import numpy as np 
 import re
+import torch
 
 
 def ndarray_to_list(obj):
@@ -12,6 +13,31 @@ def ndarray_to_list(obj):
     else:
         return obj
     
+
+    
+
+def rgb_to_hsv_torch(self, rgb):
+    """rgb: [N, 3], range [0,1]"""
+    r, g, b = rgb[:, 0], rgb[:, 1], rgb[:, 2]
+    maxc, _ = rgb.max(dim=1)
+    minc, _ = rgb.min(dim=1)
+    v = maxc
+    deltac = maxc - minc
+    s = deltac / (maxc + 1e-6)
+
+    h = torch.zeros_like(maxc)
+    mask = deltac > 1e-6
+    r_eq = (maxc == r) & mask
+    g_eq = (maxc == g) & mask
+    b_eq = (maxc == b) & mask
+
+    h[r_eq] = ((g[r_eq] - b[r_eq]) / deltac[r_eq]) % 6
+    h[g_eq] = ((b[g_eq] - r[g_eq]) / deltac[g_eq]) + 2
+    h[b_eq] = ((r[b_eq] - g[b_eq]) / deltac[b_eq]) + 4
+    h = h / 6.0
+
+    hsv = torch.stack([h, s, v], dim=1)
+    return hsv
 
     
 def safe_float(s):

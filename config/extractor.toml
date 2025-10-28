@@ -4,6 +4,8 @@ num_points = 256
 sampler = 'multinomial'
 
 [extractor.color]
-dist = 2
-thr = 20
-
+dist = 'hsv'
+thr_high = 0.3
+thr_low = 0.00
+bth_sacle = 0.04
+black_check = 5
