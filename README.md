@@ -30,28 +30,18 @@ uv sync
 
 ```text
 ChartOcr/
+├── config/
 ├── data/
 │   ├── input/
 │   └── output/
 ├── module/
 │   ├── extractor/
-│   │   ├── config.py
-│   │   ├── lineEX_extector.py
-│   │   └── lineformer_extector.py
 │   ├── detector/
-│   │   ├── config.py
-│   │   └── chart_element_detector.py
 │   ├── transform/
-│   │   ├── config.py
-│   │   └── pixel_transform.py
 │   └── ocr/
-│       └── ocr_model.py
 ├── model/
-│   ├── config.py
 │   └── chartocr.py
 ├── main.py
-├── test.sh
-└── ...
 
 ```
 
