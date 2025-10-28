@@ -7,17 +7,17 @@ CONFIG = "module/extractor/lineformer_extector/lineformer_swin_t_config.py"
 DEVICE = "cpu"
 
 
+i = 30
 
-for i in range(4,11):
-    img_path = f"data/input/{i}.jpg"
-    img = cv2.imread(img_path) # BGR format
+img_path = f"data/input/{i}.tif"
+img = cv2.imread(img_path) # BGR format
+
+infer.load_model(CONFIG, CKPT, DEVICE)
+line_dataseries = infer.get_dataseries(img, to_clean=False)
+
+# Visualize extracted line keypoints
+img = line_utils.draw_lines(img, line_utils.points_to_array(line_dataseries))
     
-    infer.load_model(CONFIG, CKPT, DEVICE)
-    line_dataseries = infer.get_dataseries(img, to_clean=False)
-
-    # Visualize extracted line keypoints
-    img = line_utils.draw_lines(img, line_utils.points_to_array(line_dataseries))
-        
-    cv2.imwrite(f'data/output/{i}.jpg', img)
+cv2.imwrite(f'data/output/{i}.jpg', img)
 
 #source .venv/bin/activate

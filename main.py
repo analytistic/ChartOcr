@@ -39,18 +39,21 @@ if __name__ == "__main__":
 
     # pixel_transform.fit(bboxes=bboxes, values=values, axis='y')
 
-    # imgs = 'data/input/'
-    # chartocr = ChartOcr(cfg=cfg)
-    # result_list = chartocr.ocr(img=imgs)
-    # result_list.save_excel(save_file="data/output/extractor.xlsx")
-    imgs = 'data/input/1.jpg'
-    imgs = mmcv.imread(imgs)
+    imgs = 'data/input/'
     chartocr = ChartOcr(cfg=cfg)
-    detector_result = chartocr.detector.getjson(imgs)
-    detector_result2plot = chartocr.detector.dete_result.to_list()
-    ChartDetector.plot(chartocr.detector.model, imgs, detector_result2plot, score_thr=0.3, out_file='detector_result.jpg')
-    extractor_result = chartocr.extractor.getjson(imgs, detector_result=detector_result)
-    LineExtractor.plot(imgs, result=extractor_result, out_file='extractor_result.jpg')
+    result_list = chartocr.ocr(img=imgs, visual_out='data/output/')
+    result_list.save_excel(save_file="extractor.xlsx")
+    # imgs = 'data/input/30.tif'
+    # imgs = mmcv.imread(imgs)
+    # chartocr = ChartOcr(cfg=cfg)
+    # detector_result = chartocr.detector.predict(imgs)
+    # detector_result_raw = detector_result.copy()
+    # detector_result = chartocr.detector.getjson(imgs)
+    # detector_result2plot = chartocr.detector.dete_result.to_list()
+    # ChartDetector.plot(chartocr.detector.model, imgs, detector_result_raw, score_thr=0.3, out_file='detector_result_raw.jpg')
+    # ChartDetector.plot(chartocr.detector.model, imgs, detector_result2plot, score_thr=0.3, out_file='detector_result.jpg')
+    # extractor_result = chartocr.extractor.getjson(imgs, detector_result=detector_result)
+    # LineExtractor.plot(imgs, result=extractor_result, out_file='extractor_result.jpg')
     
     
 

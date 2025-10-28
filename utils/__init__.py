@@ -1,7 +1,8 @@
 from .tools import (
     Abnormal_filter,
     ndarray_to_list,
-    safe_float
+    safe_float,
+    rgb_to_hsv_torch,
 )
 from .types import (
     ChartElementResult,
@@ -30,4 +31,5 @@ __all__ = [
     'ChartOcrResult',
     'SubChartOcrResult',
     'PointData',
+    'rgb_to_hsv_torch',
 ]
