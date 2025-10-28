@@ -31,7 +31,7 @@ if __name__ == "__main__":
     # LineExtractor.plot('/Users/alex/project/chartocr/ChartOcr/data/input/42.png', lineresult, out_file='extract.jpg')
 
     # result.save_json(pth="dete_result.json")
-    # deteresult = ChartElementResult.from_json(pth="dete_result.json")
+    # deteresult = ChartElementResult.from_json(pth="dete_result.json")mi
     # bboxes = deteresult.axis.y_label.bbox
     # values = deteresult.axis.y_label.value
 
@@ -39,9 +39,20 @@ if __name__ == "__main__":
 
     # pixel_transform.fit(bboxes=bboxes, values=values, axis='y')
 
-    imgs = 'data/input/'
+    # imgs = 'data/input/'
+    # chartocr = ChartOcr(cfg=cfg)
+    # result_list = chartocr.ocr(img=imgs)
+    # result_list.save_excel(save_file="data/output/extractor.xlsx")
+    imgs = 'data/input/1.jpg'
+    imgs = mmcv.imread(imgs)
     chartocr = ChartOcr(cfg=cfg)
-    result_list = chartocr.ocr(img=imgs)
-    result_list.save_excel(save_file="data/output/extractor.xlsx")
+    detector_result = chartocr.detector.getjson(imgs)
+    detector_result2plot = chartocr.detector.dete_result.to_list()
+    ChartDetector.plot(chartocr.detector.model, imgs, detector_result2plot, score_thr=0.3, out_file='detector_result.jpg')
+    extractor_result = chartocr.extractor.getjson(imgs, detector_result=detector_result)
+    LineExtractor.plot(imgs, result=extractor_result, out_file='extractor_result.jpg')
+    
+    
+
     
 
