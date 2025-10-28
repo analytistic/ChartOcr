@@ -74,7 +74,48 @@ class LineFormerExtractor:
 
         return masked_array
 
+    def color_distance(c1, c2):
+    """计算两个RGB颜色的欧氏距离（判断颜色是否相近）"""
+    # c1和c2为RGB元组或数组，如(255,0,0)或[255,0,0]
+    return math.sqrt(sum((x - y) **2 for x, y in zip(c1, c2)))
+
+    def split_by_legend_colors(img, detection_result, threshold=30):
+    """
+    根据图例颜色分割图片为层次图
+    img: 处理好的图片（仅保留绘图区域的PIL.Image对象）
+    detection_result: 包含图例颜色的检测结果
+    threshold: 颜色相似度阈值（越小越严格，建议20-50）
+    return: 层次图列表（每个元素为PIL.Image，对应一个图例颜色）
+    """
+    # 1. 提取图例颜色（转换为RGB整数格式）
+    legend_colors = detection_result.legends.label.color
+    # 假设color是numpy数组，形状为(n, 3)，每个元素是[R, G, B]（0-255）
+    legend_colors = [tuple(map(int, color)) for color in legend_colors]
+    n_legends = len(legend_colors)
+    if n_legends == 0:
+        raise ValueError("未从detection_result中找到图例颜色")
     
+    # 2. 为每个图例颜色生成层次图
+    height, width, _ = img.shape
+    bg_color = get_background_color(img)  # 复用之前的背景色获取函数
+    layer_imgs = []
+    for target_color in legend_colors:
+        # 创建背景色数组作为基础
+        layer_array = np.full_like(img_array, bg_color)
+        # 遍历每个像素，保留与目标颜色相近的像素
+        for y in range(height):
+            for x in range(width):
+                pixel_color = tuple(img_array[y, x])
+                # 跳过背景色像素（避免误判）
+                if color_distance(pixel_color, bg_color) < threshold:
+                    continue
+                # 若像素颜色与目标颜色接近，则保留
+                if color_distance(pixel_color, target_color) < threshold:
+                    layer_array[y, x] = pixel_color
+        # 转换为PIL图片并添加到列表
+        layer_imgs.append(Image.fromarray(layer_array))
+    
+    return layer_imgs
 
     
 def extractor(img,detection_result):
@@ -86,30 +127,9 @@ def extractor(img,detection_result):
     # 遍历每个层次图（每个层次图对应一条线）
     for line_num, (layer_img, color) in enumerate(zip(layer_imgs, detectionn_result['legends']['label']['color']), start=1):
         # 1. 对层次图进行推理，获取曲线坐标
-        # 假设infer.get_dataseries返回格式为：包含(x,y)坐标的列表或np.ndarray
-        # 例如：[(x1,y1), (x2,y2), ...] 或 np.array([[x1,y1], [x2,y2], ...])
         line_dataseries = infer.get_dataseries(layer_img, to_clean=False)
         
-        # 2. 确保坐标格式为np.ndarray（形状：[n, 2]，每行是(x,y)）
-        if isinstance(line_dataseries, list):
-            coordinates = np.array(line_dataseries, dtype=np.float32)
-        elif isinstance(line_dataseries, np.ndarray):
-            # 确保维度正确（n行2列）
-            if line_dataseries.ndim == 1:
-                coordinates = line_dataseries.reshape(-1, 2)
-            else:
-                coordinates = line_dataseries
-        else:
-            raise TypeError(f"不支持的坐标格式：{type(line_dataseries)}，需为list或np.ndarray")
         
-        # 3. 组装当前线的结果（颜色转换为np.ndarray格式）
-        line_result = {
-            "color": np.array(color, dtype=np.uint8),  # RGB颜色（0-255整数）
-            "coordinate": coordinates  # 坐标数组（n,2）
-        }
-        
-        # 4. 存入结果字典（键为线编号，从1开始）
-        line_extractor_result[str(line_num)] = line_result  # 用字符串作为键，如"1"、"2"
 
     return line_extractor_result
 
