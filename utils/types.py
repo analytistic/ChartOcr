@@ -317,7 +317,7 @@ class ChartOcrResultList:
                     sample = point.sample
                     point_coordinates = point.coordinates_str()
                     rows.append({
-                        "figure_name(id)": figure_name,
+                        "figure_name (id)": figure_name,
                         "figure_index": figure_index,
                         "figure_title": "",
                         "x_label": x_label,

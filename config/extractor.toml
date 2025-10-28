@@ -8,3 +8,4 @@ dist = 'hsv'
 thr_high = 0.3
 thr_low = 0.00
 bth_sacle = 0.04
+black_check = 5

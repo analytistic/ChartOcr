@@ -87,6 +87,8 @@ class LineExtractor:
         for i in range(len(legend_label.text)):
             if np.max(abs(legend_label.color[i] - np.array([0,0,0]))) < self.cfg.extractor.color.black_check:
                 self.plot_occlusion = True
+            else:
+                self.plot_occlusion = False
         img = self._img_preprocess(img, plot_area, legend_area, legend_label)
         img = img[int(plot_area[0, 1]):int(plot_area[0, 3]), int(plot_area[0, 0]):int(plot_area[0, 2])]
         W = img.shape[1]

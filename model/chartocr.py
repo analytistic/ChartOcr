@@ -59,8 +59,8 @@ class ChartOcr:
 
             subfigure_result = SubChartOcrResult.from_chartocr(
                 figure_index='',
-                x_label=detector_result.axis.x_title,
-                y_label=detector_result.axis.y_title,
+                x_label=detector_result.axis.x_title[0],
+                y_label=detector_result.axis.y_title[0],
                 note='',
                 samples=extractor_result.legends.label.text,
                 points=points,
