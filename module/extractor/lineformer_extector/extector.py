@@ -73,7 +73,6 @@ def extractor(img,detection_result):
         # # 恢复标准输出
         # sys.stdout = sys.__stdout__
 
-<<<<<<< HEAD
         # # 绘出提取的像素点折线
         # height, width, _ = img.shape
         # for line in line_dataseries:  # 循环处理每条线
@@ -144,7 +143,6 @@ def segment(img,detection_result):
     # cv2.imwrite(f'data/output/{i}.jpg', img)
 
 
-=======
 i = 30
 
 img_path = f"data/input/{i}.tif"
@@ -157,7 +155,6 @@ line_dataseries = infer.get_dataseries(img, to_clean=False)
 img = line_utils.draw_lines(img, line_utils.points_to_array(line_dataseries))
     
 cv2.imwrite(f'data/output/{i}.jpg', img)
->>>>>>> 9f055b9212e6783c913c050e737294e58bcc2d53
 
 #每次运行前需要
 #source .venv/bin/activate
