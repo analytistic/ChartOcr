@@ -52,6 +52,7 @@ class LineExtractor:
     def __init__(self, cfg):
         self.cfg = cfg
         self.device = cfg.extractor.device
+        self.plot_occlusion = False
         self.sampler = Sampler(cfg)
 
 
@@ -59,7 +60,8 @@ class LineExtractor:
         bt = self.cfg.extractor.color.bth_sacle
         pixel_bar = int(img.shape[1] * bt)
         x1, y1, x2, y2 = map(int, plot_area[0, :4])
-        cv2.rectangle(img, (x1, y1), (x2, y2), (255, 255, 255), pixel_bar)
+        if self.plot_occlusion:
+            cv2.rectangle(img, (x1, y1), (x2, y2), (255, 255, 255), pixel_bar)
         if legend_area.any():
             lx1, ly1, lx2, ly2 = map(int, legend_area[0, :4])
             cv2.rectangle(img, (lx1-pixel_bar, ly1-pixel_bar), (lx2+pixel_bar, ly2+pixel_bar), (255, 255, 255), -1)
@@ -82,6 +84,9 @@ class LineExtractor:
         plot_area = detector_result.plot.bbox
         legend_area = detector_result.legends.area
         legend_label = detector_result.legends.label
+        for i in range(len(legend_label.text)):
+            if np.max(abs(legend_label.color[i] - np.array([0,0,0]))) < self.cfg.extractor.color.black_check:
+                self.plot_occlusion = True
         img = self._img_preprocess(img, plot_area, legend_area, legend_label)
         img = img[int(plot_area[0, 1]):int(plot_area[0, 3]), int(plot_area[0, 0]):int(plot_area[0, 2])]
         W = img.shape[1]
