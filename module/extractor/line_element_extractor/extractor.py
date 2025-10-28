@@ -55,15 +55,22 @@ class LineExtractor:
     def getjson(self, img, detector_result: ChartElementResult):
         if isinstance(img, str):
             img = mmcv.imread(img)
-            img = mmcv.bgr2rgb(img)
+        img = mmcv.bgr2rgb(img)
 
         plot_area = detector_result.plot.bbox
         legend_area = detector_result.legends.area
         legend_label = detector_result.legends.label
-        img[int(legend_area[0, 1]):int(legend_area[0, 3]), int(legend_area[0, 0]):int(legend_area[0, 2])] = 255
+        try:
+            img[int(legend_area[0, 1]):int(legend_area[0, 3]), int(legend_area[0, 0]):int(legend_area[0, 2])] = 255
+        except:
+            pass
         for i in range(legend_label.bbox.shape[0]):
-            x1, y1, x2, y2 = map(int, legend_label.bbox[i, :4])
-            img[y1:y2, x1:x2] = 0
+            try:
+                x1, y1, x2, y2 = map(int, legend_label.bbox[i, :4])
+                img[y1:y2, x1:x2] = 255
+            except:
+                pass
+
         img = img[int(plot_area[0, 1]):int(plot_area[0, 3]), int(plot_area[0, 0]):int(plot_area[0, 2])]
         W = img.shape[1]
         color = torch.from_numpy(detector_result.legends.label.color).float().to(self.device)

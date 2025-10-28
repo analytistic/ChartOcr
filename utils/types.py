@@ -4,6 +4,7 @@ from module.detector.chart_element_detector.utils.types import DetectionResult, 
 import numpy as np
 from .tools import ndarray_to_list, list_to_ndarray
 import json
+import pandas as pd
 
 @dataclass
 class LegendLabel:
@@ -245,3 +246,84 @@ class LineResult:
             return cls.from_dict(data)
         except Exception as e:
             return cls()
+        
+
+
+@dataclass
+class PointData:
+    sample: str = ""
+    point_coordinates: np.ndarray = field(default_factory=lambda: np.empty((128, 2)))
+
+    def coordinates_str(self) -> str:
+        return "\n".join([f"{x:.5f},{y:.5f}" for x, y in self.point_coordinates])
+
+
+@dataclass
+class SubChartOcrResult:
+    figure_index: str = ""
+    x_label: str = ""
+    y_label: str = ""
+    note: str = ""
+    data: List[PointData] = field(default_factory=list)
+
+
+    @classmethod
+    def from_chartocr(cls, figure_index, x_label, y_label, note, samples, points):
+        data = []
+        for i, v in enumerate(samples):
+            arr = points[i, :, :]
+            idx = np.argsort(arr[:, 0])
+            arr_sortd = arr[idx]
+            data.append(
+                PointData(
+                    sample=v,
+                    point_coordinates=arr_sortd,
+                )
+            )
+        return cls(
+            figure_index = figure_index,
+            x_label = x_label,
+            y_label = y_label,
+            note = note,
+            data = data,
+        )
+            
+
+
+
+
+@dataclass
+class ChartOcrResult:
+    figure_name: str=""
+    sub_figure: List[SubChartOcrResult] = field(default_factory=list)
+
+
+@dataclass
+class ChartOcrResultList:
+    results: List[ChartOcrResult] = field(default_factory=list)
+
+
+    def save_excel(self, save_file):
+        rows = []
+        for chart in self.results:
+            figure_name = chart.figure_name
+            for sub in chart.sub_figure:
+                figure_index = sub.figure_index
+                x_label = sub.x_label
+                y_label = sub.y_label
+                note = sub.note
+                for point in sub.data:
+                    sample = point.sample
+                    point_coordinates = point.coordinates_str()
+                    rows.append({
+                        "figure_name": figure_name,
+                        "figure_index": figure_index,
+                        "x_label": x_label,
+                        "y_label": y_label,
+                        "note": note,
+                        "sample": sample,
+                        "point_coordinates": point_coordinates
+                    })
+        df = pd.DataFrame(rows)
+        df.to_excel(save_file, index=False)   
+

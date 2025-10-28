@@ -35,6 +35,9 @@ class PixelTransform:
         else:
             ys = (bboxes[:, 1] + bboxes[:, 3]) / 2
         xs = self._tofloat(values)
+        mask_inf = np.isinf(xs)
+        xs = xs[~mask_inf]
+        ys = ys[~mask_inf]
         sort_index = np.argsort(ys)
 
         if axis == 'y':

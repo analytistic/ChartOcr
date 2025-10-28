@@ -6,6 +6,10 @@ from .tools import (
 from .types import (
     ChartElementResult,
     LineResult,
+    ChartOcrResultList,
+    ChartOcrResult,
+    SubChartOcrResult,
+    PointData,
 )
 
 
@@ -22,4 +26,8 @@ __all__ = [
     'ndarray_to_list',
     'safe_float',
     'LineResult',
+    'ChartOcrResultList',
+    'ChartOcrResult',
+    'SubChartOcrResult',
+    'PointData',
 ]

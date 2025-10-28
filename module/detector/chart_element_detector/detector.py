@@ -7,6 +7,7 @@ from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import connected_components
 import colorgram
 from PIL import Image
+import cv2
 
 from paddleocr import PaddleOCR
 
@@ -16,6 +17,7 @@ class ChartDetector:
         self.cfg = cfg
         self.model = init_detector(self.cfg.detector.config_path, self.cfg.detector.checkpoint_path, device=self.cfg.detector.device)
         self.ocr = PaddleOCR(
+            rec_model = 'ch_ppocr_server_v2.0_rec',
             use_angle_cls=True,
             lang=cfg.detector.ocr.lang,
             use_gpu=cfg.detector.device=='cuda',
@@ -48,7 +50,7 @@ class ChartDetector:
             colors.append(color)
         return np.array(colors)
     
-    def _batch_ocr_class(self, img, bboxes):
+    def _batch_ocr_class(self, img, bboxes, class_name):
         """
         处理bboxes ocr提取
         """
@@ -58,6 +60,19 @@ class ChartDetector:
         crops = []
         for bbox in bboxes:
             x1, y1, x2, y2, _ = bbox
+            if class_name == 'x_label':
+                x_bar = abs(x2-x1)
+                x1 = x1 - x_bar*1
+                x2 = x2 + x_bar*0.05
+            if class_name == 'y_title':
+                y_bar = abs(y2-y1)
+                y1 = y1 - y_bar * 0.05
+                y2 = y2 + y_bar * 0.05
+            h, w = img.shape[:2]
+            x1 = max(0, int(x1))
+            x2 = min(w, int(x2))
+            y1 = max(0, int(y1))
+            y2 = min(h, int(y2))
             crop = img[int(y1):int(y2), int(x1):int(x2)]
             crops.append(crop)
 
@@ -73,6 +88,8 @@ class ChartDetector:
         else:
             results = []
             for crop in crops:
+                if class_name == 'y_title':
+                    crop = cv2.rotate(crop, cv2.ROTATE_90_CLOCKWISE)
                 try:
                     result = self.ocr.ocr(
                         crop,
@@ -219,8 +236,9 @@ class ChartDetector:
         Return: 
         """
         for class_name in self.ocr_result.class_names:
+            
             bboxes = self.dete_result.get_bboxes(class_name)
-            texts = self._batch_ocr_class(img, bboxes)
+            texts = self._batch_ocr_class(img, bboxes, class_name)
             self.ocr_result.result_dict[class_name] = texts
         
         return self.ocr_result

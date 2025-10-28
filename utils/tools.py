@@ -25,7 +25,7 @@ def safe_float(s):
     try:
         return float(s)
     except:
-        return 1e10
+        return float('inf')
     
 
 def list_to_ndarray(obj):

@@ -1,5 +1,5 @@
 [pixel_transform]
 
 [pixel_transform.filter]
-method = 'iqr'
-thr = 1.5
+method = 'mad'
+thr = 2.5

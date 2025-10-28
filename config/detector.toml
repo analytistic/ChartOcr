@@ -30,7 +30,7 @@ color_num = 3
 
 [detector.ocr]
 drop_score=0.1
-lang='en'
+lang='ch'
 page_num=0
 batch=false
 crop_scale=0.99
