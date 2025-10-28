@@ -19,6 +19,9 @@ data/
 
 # 其他
 *.log
+*.zip
+*.xlsx
 
 # results
 results/
+
