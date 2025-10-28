@@ -256,7 +256,12 @@ class PointData:
     point_coordinates: np.ndarray = field(default_factory=lambda: np.empty((128, 2)))
 
     def coordinates_str(self) -> str:
-        return "\n".join([f"{x:.5f} {y:.5f}" for x, y in self.point_coordinates])
+        def fmt(v):
+            if abs(v) < 1e-3 or abs(v) > 1e5:
+                return f"{v:.5e}"
+            else:
+                return f"{v:.5f}"
+        return "\n".join([f"{fmt(x)} {fmt(y)}" for x, y in self.point_coordinates])
 
 
 @dataclass
@@ -270,6 +275,7 @@ class SubChartOcrResult:
 
     @classmethod
     def from_chartocr(cls, figure_index, x_label, y_label, note, samples, points):
+
         data = []
         for i, v in enumerate(samples):
             arr = points[i, :, :]
