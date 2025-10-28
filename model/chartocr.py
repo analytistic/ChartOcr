@@ -1,4 +1,4 @@
-from module import PixelTransform, ChartDetector
+from module import PixelTransform, ChartDetector, LineExtractor
 from utils import ChartElementResult
 import mmcv
 from glob import glob
@@ -43,6 +43,8 @@ class ChartOcr:
             if re_errorx[2] > 0.1*re_errorx[-1] or re_errory[2] > 0.1*re_errory[-1]:
                 print('error')
                 continue
+
+        
 
         return None
     

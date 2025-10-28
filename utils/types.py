@@ -9,7 +9,7 @@ import json
 class LegendLabel:
     text: List[str] = field(default_factory=lambda: [""])            
     bbox: np.ndarray = field(default_factory=lambda: np.empty((0,5)))
-    color: np.ndarray = field(default_factory=lambda: np.empty((0,5)))
+    color: np.ndarray = field(default_factory=lambda: np.empty((0,3)))
     
 @dataclass
 class LegendInfo:
