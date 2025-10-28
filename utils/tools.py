@@ -1,8 +1,45 @@
 import numpy as np 
+import re
 
 
+def ndarray_to_list(obj):
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    elif isinstance(obj, list):
+        return [ndarray_to_list(i) for i in obj]
+    elif isinstance(obj, dict):
+        return {k: ndarray_to_list(v) for k, v in obj.items()}
+    else:
+        return obj
+    
 
+    
+def safe_float(s):
+    s = s.replace('O', '0').replace('o', '0').replace('—', '-').replace('–', '-').strip()
+    s = s.replace('E', 'e')
+    if re.match(r'^e[-+]?\d+$', s):
+        s = '1' + s
+    match = re.match(r'^10[-‐–](\d+)$', s)
+    if match:
+        return float(f'1e-{match.group(1)}')
+    try:
+        return float(s)
+    except:
+        return float('inf')
+    
 
+def list_to_ndarray(obj):
+    if isinstance(obj, list):
+        if obj and isinstance(obj[0], list):
+            return np.array(obj)
+        elif obj and not isinstance(obj[0], str):
+            return np.array(obj)
+        else:
+            return obj
+    elif isinstance(obj, dict):
+        return {k: list_to_ndarray(v) for k, v in obj.items()}
+    else:
+        return obj
 
 class Abnormal_filter:
     """

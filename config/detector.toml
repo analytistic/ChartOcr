@@ -11,7 +11,8 @@ thr = 1.5
 thr1 = 0.3
 thr2 = 0.1
 
-
+[detector.bbox_filter]
+thr = 0.3
 
 [detector.combine_xlabel]
 thr1 = 0.3
@@ -26,3 +27,10 @@ thr2 = 0.1
 thr = 0.3
 back_color_thr = 250
 color_num = 3
+
+[detector.ocr]
+drop_score=0.1
+lang='ch'
+page_num=0
+batch=false
+crop_scale=0.99

@@ -1,31 +1,58 @@
 from config import BaseConfig
-from module.detector.chart_element_detector.detector import ChartDetector
+from module import ChartDetector, LineExtractor, PixelTransform
+from utils import ChartElementResult
 import numpy as np
 import mmcv
+from model import ChartOcr
 
 
 
 if __name__ == "__main__":
     
-    cfg = BaseConfig('config/detector.toml', args=None)
+    cfg = BaseConfig('config/', args=None)
 
-    detector = ChartDetector(cfg)
-    """
-    ['x_title', 'y_title', 'plot_area', 'other', 'xlabel', 'ylabel', 'chart_title', 
-    'x_tick', 'y_tick', 'legend_patch', 'legend_label', 'legend_title', 'legend_area', 'mark_label', 'value_label', 'y_axis_area', 'x_axis_area', 'tick_grouping']
-    """
-    result0 = detector.predict('/Users/alex/project/chartocr/ChartOcr/data/input/30.tif')
+    # detector = ChartDetector(cfg)
+    # extractor = LineExtractor(cfg)
+    # result0 = detector.predict('/Users/alex/project/chartocr/ChartOcr/data/input/42.png')
+    # img = mmcv.imread('/Users/alex/project/chartocr/ChartOcr/data/input/42.png')
+    # img = mmcv.bgr2rgb(img)
+    # result0 = [r.copy()  for r in result0]
+    # # result0[15] = np.empty((0, 5))
+    # result = detector.getjson('/Users/alex/project/chartocr/ChartOcr/data/input/42.png')
+    # result1 = detector.dete_result.to_list()
+    # # result1[12] = np.empty((0, 5))
+    # # result1[13] = np.empty((0, 5))
+    # # result1[15] = np.empty((0, 5))
+    # # # detector.getjson('/Users/alex/project/chartocr/ChartOcr/data/input/3.jpg')
+    # ChartDetector.plot(detector.model, '/Users/alex/project/chartocr/ChartOcr/data/input/42.png', result0, score_thr=0.3, out_file='result_pre.jpg')
+    # ChartDetector.plot(detector.model, '/Users/alex/project/chartocr/ChartOcr/data/input/42.png', result1, score_thr=0.3, out_file='result_post.jpg')
+    
+    # lineresult = extractor.getjson(img, detector_result=result)
+    # LineExtractor.plot('/Users/alex/project/chartocr/ChartOcr/data/input/42.png', lineresult, out_file='extract.jpg')
 
-    img = mmcv.imread('/Users/alex/project/chartocr/ChartOcr/data/input/30.tif')
-    result_copy = [r.copy()  for r in result0]
-    result0[15] = np.empty((0, 5))
-    detector.dete_result.bboxes_list = result_copy
-    _ = detector.postprocess(img)
-    result1 = detector.dete_result.to_list()
+    # result.save_json(pth="dete_result.json")
+    # deteresult = ChartElementResult.from_json(pth="dete_result.json")mi
+    # bboxes = deteresult.axis.y_label.bbox
+    # values = deteresult.axis.y_label.value
 
-    result1[12] = np.empty((0, 5))
-    result1[13] = np.empty((0, 5))
-    result1[15] = np.empty((0, 5))
-    # detector.getjson('/Users/alex/project/chartocr/ChartOcr/data/input/3.jpg')
-    ChartDetector.plot(detector.model, '/Users/alex/project/chartocr/ChartOcr/data/input/30.tif', result0, score_thr=0.3, out_file='result_pre.jpg')
-    ChartDetector.plot(detector.model, '/Users/alex/project/chartocr/ChartOcr/data/input/30.tif', result1, score_thr=0.3, out_file='result_post.jpg')
+    # pixel_transform = PixelTransform(cfg=cfg)
+
+    # pixel_transform.fit(bboxes=bboxes, values=values, axis='y')
+
+    # imgs = 'data/input/'
+    # chartocr = ChartOcr(cfg=cfg)
+    # result_list = chartocr.ocr(img=imgs)
+    # result_list.save_excel(save_file="data/output/extractor.xlsx")
+    imgs = 'data/input/1.jpg'
+    imgs = mmcv.imread(imgs)
+    chartocr = ChartOcr(cfg=cfg)
+    detector_result = chartocr.detector.getjson(imgs)
+    detector_result2plot = chartocr.detector.dete_result.to_list()
+    ChartDetector.plot(chartocr.detector.model, imgs, detector_result2plot, score_thr=0.3, out_file='detector_result.jpg')
+    extractor_result = chartocr.extractor.getjson(imgs, detector_result=detector_result)
+    LineExtractor.plot(imgs, result=extractor_result, out_file='extractor_result.jpg')
+    
+    
+
+    
+

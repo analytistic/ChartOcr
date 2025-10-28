@@ -1,0 +1,9 @@
+[extractor]
+device = 'cpu'
+num_points = 256
+sampler = 'multinomial'
+
+[extractor.color]
+dist = 2
+thr = 20
+

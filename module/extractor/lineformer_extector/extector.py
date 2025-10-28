@@ -140,48 +140,8 @@ def segment(img,detection_result):
         # 用背景色覆盖图例区域
         masked_array[ly1:ly2+1, lx1:lx2+1] = [bg_r, bg_g, bg_b]
         
-    return Image.fromarray(masked_array)
+    # cv2.imwrite(f'data/output/{i}.jpg', img)
 
-def color_distance(c1, c2):
-    """计算两个RGB颜色的欧氏距离（判断颜色是否相近）"""
-    # c1和c2为RGB元组或数组，如(255,0,0)或[255,0,0]
-    return math.sqrt(sum((x - y) **2 for x, y in zip(c1, c2)))
-
-# 分出层次图
-def filter(img,detection_result, threshold=30):
-    # 1. 提取图例颜色（转换为RGB整数格式）
-    legend_colors = detection_result.legends.label.color
-    # 假设color是numpy数组，形状为(n, 3)，每个元素是[R, G, B]（0-255）
-    legend_colors = [tuple(map(int, color)) for color in legend_colors]
-    n_legends = len(legend_colors)
-    if n_legends == 0:
-        raise ValueError("未从detection_result中找到图例颜色")
-
-     # 2. 转换图片为数组（RGB模式）
-    img_rgb = img.convert('RGB')
-    img_array = np.array(img_rgb)
-    height, width, _ = img_array.shape
-    bg_color = get_background_color(img_rgb)  # 复用之前的背景色获取函数
-
-    # 3. 为每个图例颜色生成层次图
-    layer_imgs = []
-    for target_color in legend_colors:
-        # 创建背景色数组作为基础
-        layer_array = np.full_like(img_array, bg_color)
-        # 遍历每个像素，保留与目标颜色相近的像素
-        for y in range(height):
-            for x in range(width):
-                pixel_color = tuple(img_array[y, x])
-                # 跳过背景色像素（避免误判）
-                if color_distance(pixel_color, bg_color) < threshold:
-                    continue
-                # 若像素颜色与目标颜色接近，则保留
-                if color_distance(pixel_color, target_color) < threshold:
-                    layer_array[y, x] = pixel_color
-        # 转换为PIL图片并添加到列表
-        layer_imgs.append(Image.fromarray(layer_array))
-    
-    return layer_imgs
 
 
 #每次运行前需要

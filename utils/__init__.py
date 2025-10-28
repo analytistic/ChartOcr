@@ -1,5 +1,15 @@
 from .tools import (
     Abnormal_filter,
+    ndarray_to_list,
+    safe_float
+)
+from .types import (
+    ChartElementResult,
+    LineResult,
+    ChartOcrResultList,
+    ChartOcrResult,
+    SubChartOcrResult,
+    PointData,
 )
 
 
@@ -12,4 +22,12 @@ __all__ = [
     'mad_mask',
     'iqr_mask',
     'zscore_mask',
+    'ChartElementResult',
+    'ndarray_to_list',
+    'safe_float',
+    'LineResult',
+    'ChartOcrResultList',
+    'ChartOcrResult',
+    'SubChartOcrResult',
+    'PointData',
 ]

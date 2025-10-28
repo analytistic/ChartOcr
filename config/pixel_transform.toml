@@ -1,0 +1,5 @@
+[pixel_transform]
+
+[pixel_transform.filter]
+method = 'mad'
+thr = 2.5
