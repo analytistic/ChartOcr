@@ -87,6 +87,7 @@ class LineExtractor:
         for i in range(len(legend_label.text)):
             if np.max(abs(legend_label.color[i] - np.array([0,0,0]))) < self.cfg.extractor.color.black_check:
                 self.plot_occlusion = True
+                break
             else:
                 self.plot_occlusion = False
         img = self._img_preprocess(img, plot_area, legend_area, legend_label)
@@ -122,7 +123,7 @@ class LineExtractor:
         valid_index = valid_index[0].cpu().numpy()
         detector_result.legends.label.bbox = detector_result.legends.label.bbox[valid_index, :]
         detector_result.legends.label.color = detector_result.legends.label.color[valid_index, :]
-        text = [detector_result.legends.label.text[i] for i in range(len(valid_index))]
+        text = [detector_result.legends.label.text[valid_index[i]] for i in range(len(valid_index))]
 
         detector_result.legends.label.text = text
 
