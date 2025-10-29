@@ -1,34 +1,20 @@
-# from config import BaseConfig
-# from module import ChartDetector, LineExtractor, PixelTransform
-# from utils import ChartElementResult
-# import numpy as np
-# import mmcv
-# from model import ChartOcr
-# Initialize PaddleOCR instance
+from config import BaseConfig
+from module import ChartDetector, LineExtractor, PixelTransform
+from utils import ChartElementResult
+import numpy as np
+from PIL import Image
+import mmcv
+from model import ChartOcr
 from paddleocr import PaddleOCR
-ocr = PaddleOCR(
-    use_doc_orientation_classify=False,
-    use_doc_unwarping=False,
-    use_textline_orientation=False)
-
-# Run OCR inference on a sample image 
-result = ocr.predict(
-    input="截屏2025-10-28 22.27.29.png")
-
-# Visualize the results and save the JSON results
-for res in result:
-    res.print()
-    res.save_to_img("output")
-    res.save_to_json("output")
 
 
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
     
-    # cfg = BaseConfig('config/', args=None)
+    cfg = BaseConfig('config/', args=None)
 
     # detector = ChartDetector(cfg)
-    # extractor = LineExtractor(cfg)
+
     # result0 = detector.predict('/Users/alex/project/chartocr/ChartOcr/data/input/42.png')
     # img = mmcv.imread('/Users/alex/project/chartocr/ChartOcr/data/input/42.png')
     # img = mmcv.bgr2rgb(img)
@@ -55,10 +41,10 @@ for res in result:
 
     # pixel_transform.fit(bboxes=bboxes, values=values, axis='y')
 
-    # imgs = 'data/input/'
-    # chartocr = ChartOcr(cfg=cfg)
-    # result_list = chartocr.ocr(img=imgs, visual_out='data/output/')
-    # result_list.save_excel(save_file="extractor.xlsx")
+    imgs = 'data/input/'
+    chartocr = ChartOcr(cfg=cfg)
+    result_list = chartocr.ocr(img=imgs, visual_out='data/output/')
+    result_list.save_excel(save_file="extractor.xlsx")
     # imgs = 'data/input/30.tif'
     # imgs = mmcv.imread(imgs)
     # chartocr = ChartOcr(cfg=cfg)

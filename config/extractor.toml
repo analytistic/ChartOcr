@@ -1,6 +1,6 @@
 [extractor]
 device = 'cpu'
-num_points = 256
+num_points = 128
 sampler = 'multinomial'
 
 [extractor.color]
