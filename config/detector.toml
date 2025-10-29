@@ -29,7 +29,8 @@ back_color_thr = 250
 color_num = 3
 
 [detector.ocr]
-model = 'ch_ppocr_server_v2.0_rec'
+model = 'ch_ppocr_server_v4.0_rec'
+# model = 'pytesseract'
 drop_score=0.1
 lang='ch'
 page_num=0
