@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
     # pixel_transform.fit(bboxes=bboxes, values=values, axis='y')
 
-    imgs = 'data/input/'
+    imgs = 'data/input/29.tif'
     chartocr = ChartOcr(cfg=cfg)
     result_list = chartocr.ocr(img=imgs, visual_out='data/output/')
     result_list.save_excel(save_file="extractor.xlsx")

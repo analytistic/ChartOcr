@@ -60,8 +60,12 @@ class LineExtractor:
         bt = self.cfg.extractor.color.bth_sacle
         pixel_bar = int(img.shape[1] * bt)
         x1, y1, x2, y2 = map(int, plot_area[0, :4])
-        if self.plot_occlusion:
-            cv2.rectangle(img, (x1, y1), (x2, y2), (255, 255, 255), pixel_bar)
+        mask = np.ones((img.shape[0], img.shape[1]), dtype=bool)
+        mask[max(y1-pixel_bar, 0):min(y2+pixel_bar, img.shape[0]), max(x1-pixel_bar, 0):min(x2+pixel_bar, img.shape[1])] = False
+        img[mask] = (255, 255, 255)
+        inter_mask = np.all(img < 3, axis = -1)
+        inter_mask[y1+pixel_bar:y2-pixel_bar, x1+pixel_bar:x2-pixel_bar] = False
+        img[inter_mask] = (255, 255, 255)
         if legend_area.any():
             lx1, ly1, lx2, ly2 = map(int, legend_area[0, :4])
             cv2.rectangle(img, (lx1-pixel_bar, ly1-pixel_bar), (lx2+pixel_bar, ly2+pixel_bar), (255, 255, 255), -1)
@@ -91,7 +95,11 @@ class LineExtractor:
             else:
                 self.plot_occlusion = False
         img = self._img_preprocess(img, plot_area, legend_area, legend_label)
-        img = img[int(plot_area[0, 1]):int(plot_area[0, 3]), int(plot_area[0, 0]):int(plot_area[0, 2])]
+
+        x1_bias, y1_bias = map(lambda x: int(x)-10, plot_area[0, 0:2])
+        x2_bias, y2_bias = map(lambda x: int(x)+10, plot_area[0, 2:4])
+        
+        img = img[y1_bias:y2_bias, x1_bias:x2_bias]
         W = img.shape[1]
         color = torch.from_numpy(detector_result.legends.label.color).float().to(self.device)
         img = torch.from_numpy(img).to(self.device) 
@@ -114,7 +122,8 @@ class LineExtractor:
         masks = (dists <= self.cfg.extractor.color.thr_high) & (dists >= self.cfg.extractor.color.thr_low)
 
         pixels, valid_index = self.sampler.sample(masks, W, self.cfg.extractor.num_points)
-        pixels = pixels + torch.tensor([int(plot_area[0, 0]), int(plot_area[0, 1])]).to(self.device)
+        pixels = pixels + torch.tensor([x1_bias, y1_bias]).to(self.device)
+
 
         pixels = pixels.cpu().numpy()
 

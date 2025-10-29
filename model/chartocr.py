@@ -33,6 +33,7 @@ class ChartOcr:
 
         results = []
         for i, img in tqdm(enumerate(imgs), total = len(imgs)):
+            print(f'processing {figure_name[i]}')
             if img is not np.ndarray:
                 try:
                     img = mmcv.imread(img)

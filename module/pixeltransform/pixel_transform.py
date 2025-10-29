@@ -62,6 +62,7 @@ class PixelTransform:
             xs = xs[1:-1]
             ys = ys[1:-1] 
         xs_log = np.log(xs.copy())
+        print(f"拟合{axis}轴数据, {len(xs)} 个数据")
         if np.any(xs <= 0) or np.any(np.isnan(xs_log)) or np.any(np.isinf(xs_log)):
             params = curve_fit(self.model, xs, ys)
             self.params = params[0]
