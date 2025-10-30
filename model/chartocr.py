@@ -48,9 +48,7 @@ class ChartOcr:
             y_values = detector_result.axis.y_label.value
             re_errorx = self.x_pixeltransform.fit(bboxes=x_bboxes, values=x_values, axis='x')
             re_errory = self.y_pixeltransform.fit(bboxes=y_bboxes, values=y_values, axis='y')
-            if re_errorx[2] > 0.1*re_errorx[-1] or re_errory[2] > 0.1*re_errory[-1]:
-                print(f'error: {figure_name}')
-                continue
+
 
             extractor_result = self.extractor.getjson(img = img, detector_result=detector_result)
 

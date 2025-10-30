@@ -1,6 +1,8 @@
 import numpy as np
 from scipy.optimize import curve_fit
 from utils import safe_float, Abnormal_filter
+from scipy.stats import gaussian_kde
+
 
 
 def linear(x, a, b):
@@ -18,6 +20,10 @@ class PixelTransform:
         """
         xp=a⋅log(xdata)+b xdata = exp((xp - b) / a)
         xp=a⋅xdata+b
+
+        xdata = (xp - b)/a = cxp + d
+        xdata = exp((xp - b) / a) = exp(cxp + d)
+        log_xdata = cxp + d
         """
         self.cfg = cfg
         self.model = linear
@@ -44,8 +50,8 @@ class PixelTransform:
             sort_index = sort_index[::-1]
         ys = ys[sort_index]
         xs = xs[sort_index]
-        xs, mask = self.filter.filter(xs)
-        ys = ys[mask]
+        # xs, mask = self.filter.filter(xs)
+        # ys = ys[mask]
 
         keep = []
         prev = float('inf')
@@ -58,9 +64,6 @@ class PixelTransform:
                 xs[i] = -v 
         xs = xs[keep]
         ys = ys[keep]
-        if len(xs) >= 4:
-            xs = xs[1:-1]
-            ys = ys[1:-1] 
         xs_log = np.log(xs.copy())
         print(f"拟合{axis}轴数据, {len(xs)} 个数据")
         if np.any(xs <= 0) or np.any(np.isnan(xs_log)) or np.any(np.isinf(xs_log)):
@@ -69,7 +72,9 @@ class PixelTransform:
             self.log_flag = False
             re_error = np.abs(self.remodel(ys, self.log_flag, *self.params) - xs)
             return re_error.mean(), re_error.std(), re_error.max(), np.max(np.abs(xs))
+
         params1 = curve_fit(self.model, xs, ys)
+
         params2 = curve_fit(self.model, xs_log, ys)
         perr1 = np.sqrt(np.diag(params1[1]))
         perr2 = np.sqrt(np.diag(params2[1]))
@@ -80,6 +85,9 @@ class PixelTransform:
             self.log_flag = True
             self.params = params2[0]
         re_error = np.abs(self.remodel(ys, self.log_flag, *self.params) - xs)
+        re_error_mask = re_error > np.abs(xs)*0.01
+        if re_error_mask.any():
+            print(f'error fit')
 
         return re_error.mean(), re_error.std(), re_error.max(), np.max(np.abs(xs))
 

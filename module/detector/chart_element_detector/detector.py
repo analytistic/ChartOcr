@@ -8,7 +8,6 @@ from scipy.sparse.csgraph import connected_components
 import colorgram
 from PIL import Image
 import cv2
-
 from paddleocr import PaddleOCR
 
 
@@ -155,7 +154,8 @@ class ChartDetector:
         merge_pair = (diff_axis_1 <= diff_axis_0) | (diff_axis_2 <= diff_axis_0)
         if axis == 'x':
             diff_axis_12 = np.abs(bbox_set[:, axis1, None] - bbox_set[None, :, axis2])
-            cross_mean = np.mean(np.min(diff_axis_12, axis=1))
+            diff_axis_21 = np.abs(bbox_set[:, axis2, None] - bbox_set[None, :, axis1])
+            cross_mean = np.mean((np.min(diff_axis_12, axis=1) + np.min(diff_axis_21, axis=1))/2)
             merge_pair = merge_pair | (diff_axis_12 <= cross_mean * thr2)
         np.fill_diagonal(merge_pair, False)
 

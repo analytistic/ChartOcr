@@ -41,7 +41,7 @@ def rgb_to_hsv_torch(self, rgb):
 
     
 def safe_float(s):
-    s = s.replace('O', '0').replace('o', '0').replace('—', '-').replace('–', '-').strip()
+    s = s.replace('O', '0').replace('o', '0').replace('—', '-').replace('–', '-').replace(' ', '').strip()
     s = s.replace('E', 'e')
     if re.match(r'^e[-+]?\d+$', s):
         s = '1' + s
