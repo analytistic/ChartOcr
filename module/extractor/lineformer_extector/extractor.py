@@ -1,23 +1,23 @@
-import infer
+import module.extractor.lineformer_extector.infer
 import cv2
-import line_utils
+import module.extractor.lineformer_extector.line_utils
 import os 
 import sys
 import matplotlib.pyplot as plt
 from PIL import Image
 from collections import defaultdict
+from utils import ChartElementResult, LineResult
+
+# unset LD_LIBRARY_PATH PYTHONPATH CONDA_PREFIX CONDA_DEFAULT_ENV
+# source .venv/bin/activate
 
 CKPT = "module/extractor/lineformer_extector/iter_3000.pth" #
 CONFIG = "module/extractor/lineformer_extector/lineformer_swin_t_config.py"
 DEVICE = "cpu"
 
 class LineFormerExtractor:
-    def __init__(self, cfg, img, detection_result):
-        self.cfg = cfg
-        self.img=img
-        self.detection_result = detection_result
+    def __init__(self):
         self.model=infer.load_model(CONFIG, CKPT, DEVICE)
-        self.line_extractor_result = extractor(self.img,self.detection_result)
     # 获取背景色
     def get_background_color(img):
         width, height = img.size
@@ -118,7 +118,11 @@ class LineFormerExtractor:
         
         return layer_imgs
 
-    def extractor(img,detection_result):
+    def getjson(self,img,detection_result: ChartElementResult):
+        if isinstance(img, str):
+            img = mmcv.imread(img)
+        img = mmcv.bgr2rgb(img)
+
         masked_img=segment(img,detection_result)
 
         layer_imgs=split_by_legend_colors(masked_img,detection_result)
@@ -150,18 +154,17 @@ class LineFormerExtractor:
                 selected_y = full_y[selected_indices]
             
             # 4. 组织为LineResult格式
-            line_result = {
-                "legends": detector_result.legends,  # 复用detector_result的legends
-                "x_pixel": [selected_x],  # 列表中存储当前线的x坐标数组
-                "y_pixel": [selected_y]   # 列表中存储当前线的y坐标数组
-            }
+            line_result = LineResult(
+                legends= detection_result.legends,  # 复用detection_result的legends
+                x_pixel= [selected_x],  # 列表中存储当前线的x坐标数组
+                y_pixel= [selected_y]   # 列表中存储当前线的y坐标数组
+            )
             
             line_results.append(line_result)
 
         # 画图
-        img = line_utils.draw_lines(img, line_utils.points_to_array(extractor_result))
-            
-        cv2.imwrite(f'data/test/{i}.jpg', img)
+        # img = line_utils.draw_lines(img, line_utils.points_to_array(extractor_result))
+        # cv2.imwrite(f'data/test/{i}.jpg', img)
     
         return line_results
             

@@ -9,8 +9,8 @@ from mmdet.apis import (inference_detector, init_detector)
 
 # import sys
 # sys.path.append("/home/csgrad/jayashok/Mask2Former/")
-from clean_chart import get_clean_input
-import line_utils
+from module.extractor.lineformer_extector.clean_chart import get_clean_input
+import module.extractor.lineformer_extector.line_utils
 
 import copy
 

@@ -1,4 +1,4 @@
-from module import PixelTransform, ChartDetector, LineExtractor
+from module import PixelTransform, ChartDetector, LineExtractor,LineFormerExtractor
 from utils import ChartElementResult, LineResult, ChartOcrResult, ChartOcrResultList, PointData, SubChartOcrResult
 import mmcv
 from glob import glob
@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import numpy as np
 from tqdm import tqdm
+import module.extractor.lineformer_extector.extractor
 
 class ChartOcr:
     def __init__(self, cfg):
@@ -13,7 +14,7 @@ class ChartOcr:
         self.detector = ChartDetector(cfg)
         self.x_pixeltransform = PixelTransform(cfg)
         self.y_pixeltransform = PixelTransform(cfg)
-        self.extractor = LineExtractor(cfg)
+        self.extractor = LineFormerExtractor() #改了这里
 
     def ocr(self, img, visual_out = None):
         figure_name = []
