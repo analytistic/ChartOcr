@@ -17,16 +17,17 @@ class ChartDetector:
         self.cfg = cfg
         self.model = init_detector(self.cfg.detector.config_path, self.cfg.detector.checkpoint_path, device=self.cfg.detector.device)
         self.ocr = PaddleOCR(
-            rec_model = cfg.detector.ocr.model,
+            # rec_model = cfg.detector.ocr.model,
             use_angle_cls=True,
             lang=cfg.detector.ocr.lang,
             use_gpu=cfg.detector.device=='cuda',
-            show_log=False,
-            det=False,
+            show_log=True,
+            det=True,
             rec=True,
             drop_score=self.cfg.detector.ocr.drop_score,
             page_num=self.cfg.detector.ocr.page_num,
             use_mp=False,
+            model_version='v4' 
         )
         self.classes = self.model.CLASSES
         self.filter = Abnormal_filter(cfg.detector.filter)
