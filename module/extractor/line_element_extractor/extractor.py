@@ -62,10 +62,15 @@ class LineExtractor:
         x1, y1, x2, y2 = map(int, plot_area[0, :4])
         mask = np.ones((img.shape[0], img.shape[1]), dtype=bool)
         mask[max(y1-pixel_bar, 0):min(y2+pixel_bar, img.shape[0]), max(x1-pixel_bar, 0):min(x2+pixel_bar, img.shape[1])] = False
-        img[mask] = (255, 255, 255)
-        inter_mask = np.all(img < 3, axis = -1)
-        inter_mask[y1+pixel_bar:y2-pixel_bar, x1+pixel_bar:x2-pixel_bar] = False
-        img[inter_mask] = (255, 255, 255)
+        mask[y1+pixel_bar:y2-pixel_bar, x1+pixel_bar:x2-pixel_bar] = True
+        img_to_maincolor = img.copy()
+        img_to_maincolor[mask] = (255, 255, 255)
+        img_to_maincolor = Image.fromarray(img_to_maincolor)
+        maincolor = colorgram.extract(img_to_maincolor, 2)
+        img_to_maincolor = np.array(img_to_maincolor)
+        mask_main_color = np.all((img_to_maincolor - (maincolor[1].rgb.r, maincolor[1].rgb.g, maincolor[1].rgb.b)) < 3, axis = -1)
+        mask[y1+pixel_bar:y2-pixel_bar, x1+pixel_bar:x2-pixel_bar] = False
+        img[mask | mask_main_color] = (255, 255, 255)
         if legend_area.any():
             lx1, ly1, lx2, ly2 = map(int, legend_area[0, :4])
             cv2.rectangle(img, (lx1-pixel_bar, ly1-pixel_bar), (lx2+pixel_bar, ly2+pixel_bar), (255, 255, 255), -1)

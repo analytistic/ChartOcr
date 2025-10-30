@@ -41,11 +41,11 @@ if __name__ == "__main__":
 
     # pixel_transform.fit(bboxes=bboxes, values=values, axis='y')
 
-    imgs = 'data/input/25.tif'
+    imgs = 'data/input/'
     chartocr = ChartOcr(cfg=cfg)
 
     result_list = chartocr.ocr(img=imgs, visual_out='data/output/')
-    ChartDetector.plot(chartocr.detector.model, imgs, chartocr.detector.dete_result.to_list(), 0.3)
+ 
     result_list.save_excel(save_file="extractor.xlsx")
     # imgs = 'data/input/30.tif'
     # imgs = mmcv.imread(imgs)
